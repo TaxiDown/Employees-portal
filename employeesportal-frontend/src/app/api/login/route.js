@@ -12,7 +12,7 @@ export async function POST(request) {
     let status = null;
     
     try{
-      const res = await fetch(`${process.env.API_URL}api/auth/login/`, {
+      const res = await fetch(`${process.env.API_URL}api/auth/employee/login/`, {
         cache: "no-store",
         method: 'POST',
         body: JSON.stringify(body),
@@ -23,8 +23,10 @@ export async function POST(request) {
       status = res.status
       if (res.status==200){
         const cookieHeader = res.headers.get('Set-Cookie');
-        const response = NextResponse.json({ message: 'Login OK' });
+        const response = NextResponse.json({ message: 'Login OK', status : 200 });
+        const body = await res.json();
         response.headers.set('Set-Cookie', cookieHeader);
+        response.headers.append('Set-Cookie', `role=${body.user.role}; Path=/`)
         return response
       }else 
       return NextResponse.json({ message: 'error' }, { status: status })

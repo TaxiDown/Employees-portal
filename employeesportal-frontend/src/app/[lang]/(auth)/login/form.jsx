@@ -26,6 +26,7 @@ export default function Loginform({loginTitle, dontHaveAccount, createAccount, f
         setCode(response.status);
         switch (response.status) {
             case 200 :
+
               if(onSuccess){
                 onSuccess();
                 const fakeEvent = { preventDefault: () => {} };
