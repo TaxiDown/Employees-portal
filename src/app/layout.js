@@ -3,7 +3,7 @@ import "./globals.css";
 
 export default async function RootLayout({ children }) {
   return (
-    <html>
+    <html className='overflow-x-hidden'>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

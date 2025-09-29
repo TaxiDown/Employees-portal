@@ -1,44 +1,285 @@
-import React from 'react'
+'use client'
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react'
+import NotFound from './not_found';
+import { useTranslations } from 'next-intl';
+import { MapPinIcon } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import { Calendar } from 'lucide-react';
+import { Timer } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Clock } from 'lucide-react';
+import { string } from 'zod';
+import RideDetails from './ride_details';
 
-export default function BookingDetails() {
-    const details={
-        "id": 7,
-        "price": "4575.38",
-        "duration": "00:00:00",
-        "status": "Pending",
-        "flg_paid": false,
-        "return_ride": false,
-        "booking": {
-            "id": 7,
-            "booking_number": "BK-293420-1",
-            "datetime_pickup": "2025-09-24T15:09:00",
-            "pickup_coordinates": [
-                -1.643878,
-                42.816635
-            ],
-            "pickup_location": "Pamplona, Spain",
-            "dropoff_coordinates": [
-                -3.701219,
-                40.421345
-            ],
-            "dropoff_location": "Madrid, Spain",
-            "email": "rawda@gmail.com",
-            "phone":"01015602499",
-            "num_adult_seats": 2,
-            "extra_child_seats": [],
-            "return_ride": true,
-            "datetime_return": "2025-09-26T20:09:00",
-            "customer_note": "",
-            "services": null
-        },
-        "customer": null,
-        "driver": null,
-        "vehicle": null
+
+export default function BookingDetails({bookingID}) {
+    const router = useRouter();
+    const [rides, setRides] = useState([]);
+    const [bookingDetails, setBookingDetails] = useState([]);
+    const [notFound, setNotFound] = useState(false);
+    const dict = useTranslations("pick")
+    const [isLoading, setIsLoading] = useState(true);
+    const [showRide, setShowRide] = useState("");
+
+    useEffect(()=>{
+        const getRides = async()=>{
+            const response = await fetch(`/api/get_booking_details/${bookingID}/get_rides`,{
+                method: 'GET',
+                Credentials: 'include',
+                headers:{
+                    'Content-Type': 'application/json'
+                }
+            })
+            if(response.status === 200){
+                const ridesObject = await response.json();
+                setRides(ridesObject.results);
+            }else if(response.status === 401)
+                router.push('/unauthorized');
+        }
+        const getBookingDetails = async()=>{
+            const response = await fetch(`/api/get_booking_details/${bookingID}`,{
+                method: 'GET',
+                Credentials: 'include',
+                headers:{
+                    'Content-Type': 'application/json'
+                }
+            })
+            if(response.status === 200){
+                const detailsObject = await response.json();
+                setBookingDetails(detailsObject);
+            }else if(response.status === 401)
+                router.push('/unauthorized');
+            else if(response.status === 404)
+                setNotFound(true);
+            setIsLoading(false);
+
+        }
+        getBookingDetails();
+        getRides();
+    }, []);
+
+
+    const getStatusVariant = (status) => {
+        switch (status.toLowerCase()) {
+          case "pending":
+            return "secondary"
+          case "confirmed":
+            return "outline"
+          case "completed":
+            return "default"
+          case "cancelled":
+            return "destructive"
+          default:
+            return "secondary"
+        }
+      }
+
+    const getColor = (status) => {
+    switch (status.toLowerCase()) {
+        case "pending":
+        return "bg-orange-400"
+        case "confirmed":
+        return "border-green-500 text-green-500"
+        case "completed":
+        return "bg-green-500"
+        case "canceled":
+        return "bg-red-400"
+        default:
+        return ""
+    }}
+
+    const getRide = async(e)=>{
+        console.log(e.target.id, "cmcmc")
+        const response = await fetch(`/api/get_booking_details/${bookingID}/get_rides/${e.target.id}/`,{
+            method: 'GET',
+            Credentials: 'include',
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        })
+        if(response.status === 200){
+            const detailsObject = await response.json();
+            setShowRide(detailsObject);
+            console.log(detailsObject);
+        }else if(response.status === 401)
+            router.push('/unauthorized');
+        else if(response.status === 404)
+            setNotFound(true);
     }
+
+    if(notFound){
+        <NotFound />
+    }
+    if (isLoading)
+        return <div>
+            mkfkf
+        </div>
   return (
-    <div className='w-screen h-screen bg-black/40 flex items-center justify-center'>
-        <div className='w-200 h-100 bg-white'></div>
-        
+    <div className='w-full min-h-screen h-max px-12 mt-30 mb-10 lg:w-[70%]'>
+        {showRide &&
+        <RideDetails ride={showRide} setShowRide={setShowRide}/> 
+        }
+        <h1 className='font-medium text-2xl my-3'>Booking #{bookingDetails.booking_number}</h1>
+        <div  className='flex flex-col lg:flex-row gap-5 justify-between'>
+        <div className='flex flex-col gap-3'>
+            <h2 className='font-medium text-lg my-1 text-neutral-500'>Trip Details</h2>
+            <div className="flex gap-4 w-100 max-w-[90%] ">
+              <div className="flex flex-col items-center pt-2">
+              {bookingDetails.dropoff_location ? (
+                  <>
+                  <div className="w-3 h-3 rounded-full bg-green-500 border-2 border-white shadow-md"></div>
+                  <div className="w-px h-14 bg-gray-300 my-2"></div>
+                  <MapPinIcon className="w-4 h-4 text-red-500" />
+                  </>
+              ):
+              <MapPinIcon className="w-5 h-7 text-gray-700" />
+              }
+              </div>
+              <div className="flex flex-col h-full gap-4">
+              <div className="flex items-center space-x-3">
+                <div>
+                  <p className="font-medium">{dict("pickupLocation")}</p>
+                  <p className="text-gray-600">{bookingDetails.pickup_location || "Not provided"}</p>
+                </div>
+              </div>
+              {bookingDetails.dropoff_location &&
+              <div className="flex items-center space-x-3">
+                <div>
+                  <p className="font-medium">{dict("destination")}</p>
+                  <p className="text-gray-600">{bookingDetails.dropoff_location || "Not provided"}</p>
+                </div>
+              </div>
+              }
+              </div>
+             </div>
+
+             <div className="flex items-center space-x-3">
+                <Calendar className="w-5 h-5 text-orange-500" />
+                <div>
+                  <p className="font-medium">{dict("pickTime")}</p>
+                  <p className="text-gray-600">{bookingDetails.datetime_pickup.split("T")[0]}{'\u00A0'}{'\u00A0'}{'\u00A0'}{bookingDetails.datetime_pickup.split("T")[1]}</p>
+                </div>
+              </div>
+              {bookingDetails.duration >= 1 &&
+              <div className="flex items-center space-x-3">
+                <Timer className="w-6 h-6 text-orange-500" />
+                <div>
+                  <p className="font-medium">{dict("duration")}</p>
+                  <p className="text-gray-600">{bookingDetails.duration} {bookingDetails.duration ==1 ? pickupDict.hour : pickupDict.hours}</p>
+                </div>
+              </div>
+              }
+              {bookingDetails.return_ride  &&
+              <div className="flex items-center space-x-3">
+                  <Calendar className="w-5 h-5 text-orange-500" />
+                  <div>
+                  <p className="font-medium">{dict("returnTime")}</p>
+                  <p className="text-gray-600">{bookingDetails.datetime_return.split("T")[0]}{'\u00A0'}{'\u00A0'}{'\u00A0'}{bookingDetails.datetime_return.split("T")[1]}</p>
+                  </div>
+              </div>
+              }
+        </div>
+        {
+        <div className='flex flex-col gap-7'>
+        <div className='flex flex-col gap-1'>
+            <h2 className='font-medium text-lg my-1 text-neutral-500'>Contact Information</h2>
+            {bookingDetails.email &&
+            <a href={`mailto:${bookingDetails.email}`} className='flex items-center gap-2 text-lg hover:text-orange-600 '>
+                <Mail size={17}/>
+                {bookingDetails.email}
+            </a>
+            }
+            {bookingDetails.phone_number &&
+            <div className='flex items-center gap-2 text-lg'>
+                <Phone size={17}/>
+                {bookingDetails.phone_number}
+            </div>
+            }
+        </div>
+        <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-500">
+              Seating Requirements
+            </h3>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-foreground">
+                  Adult Seats: <span className="font-medium">{bookingDetails.num_adult_seats}</span>
+                </span>
+              </div>
+
+              {bookingDetails.extra_child_seats.map((childSeat, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <span className="text-sm text-foreground">
+                    Child Seat Type {childSeat.child_seat}:
+                    <span className="font-medium ml-1">{childSeat.num_seats} seats</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
+         }   
+        </div>
+        {bookingDetails?.services?.service &&
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="space-y-2 mt-5">
+            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-600">
+              Service 
+              <Badge variant="outline" className='text-orange-700'>{bookingDetails.services.service}</Badge>
+
+            </h3>
+          </div>
+        </div>
+        }
+        <div>
+        <div className="overflow-x-auto mt-3 ">
+        <h2 className='font-medium text-lg my-2 text-neutral-600'>Booking Rides</h2>
+
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-semibold">Ride ID</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
+                <TableHead className="font-semibold">Return ride</TableHead>
+                <TableHead className="font-semibold">Driver</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rides && rides.map((booking) => (
+                <TableRow key={booking.id} className="hover:bg-muted/50">
+                  <TableCell id={booking.id} onClick={getRide} className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700">{booking.id}</TableCell>
+
+
+                  <TableCell>
+                    <Badge variant={getStatusVariant(booking.status)} className={getColor(booking.status)}>{booking.status}</Badge>
+                  </TableCell>
+
+                  
+                  <TableCell className="space-y-1">
+                    {String(booking.return_ride )}
+                  </TableCell>
+                  <TableCell className="space-y-1">
+                    {booking.id_driver || "Unassigned"}
+                  </TableCell>
+
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {rides.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>No booking records found.</p>
+          </div>
+        )}
+
+      </div>
     </div>
   )
 }

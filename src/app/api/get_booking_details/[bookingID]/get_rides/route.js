@@ -3,11 +3,8 @@ import {NextResponse} from 'next/server'
 import { cookies } from "next/headers";
 import { RefreshAccessToken } from '@/app/actions/validate_token';
 
-export async function GET(req){
-    const {searchParams} = new URL(req.url);
-    const size = searchParams.get('page_size');
-    const page = searchParams.get('page');
-
+export async function GET(req, {params}){
+    const {bookingID} = await params;
     const cookieStore = await cookies();
     let access = cookieStore.get('access')?.value;
     let refresh = cookieStore.get('refresh')?.value;
@@ -27,16 +24,16 @@ export async function GET(req){
     }
     if(access){
         try{
-            const response = await fetch(`${process.env.API_URL}api/employees/bookings/?page_size=${size}&page=${page}`, {
+            const response = await fetch(`${process.env.API_URL}api/employees/bookings/${bookingID}/rides/`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json',
                 'Cookie': cookieHeader2 ? cookieHeader2 : cookieHeader,
                 },
             });
-            const bookings =  await response.json();
+            const rides =  await response.json();
             if(response.status === 200){
-                const res = NextResponse.json(bookings);
+                const res = NextResponse.json(rides);
                 if (cookieHeader2){
                     res.headers.set('Set-Cookie', cookieHeader2)
                 }

@@ -29,6 +29,7 @@ import { Timer } from "lucide-react";
 import Child from "./child";
 import { Plane } from "lucide-react";
 import { useTranslations } from "next-intl";
+import PickupDetails from "@/components/pickup_details";
 
 const schema = z.object({
   phone: z
@@ -38,15 +39,7 @@ const schema = z.object({
 });
 
 
-export default function PickupFor({
-  pick,
-  oneWay,
-  perHour,
-  pickupLocation,
-  destination,
-  getOffer,
-
-}) {
+export default function PickupFor() {
 
   const dict = useTranslations('pick');
 
@@ -60,7 +53,7 @@ export default function PickupFor({
   });
 
   const router = useRouter();
-  const services = ["Airport Transfers", "Wedding Events", "Other.."]
+  const services = ["Airport Transfers", "Wedding Events","Cruise Port Transfers", "City Rides", "Business & Corporate Travel", "Special Events", "Nationwide Transportation", "Handicap Transportation", "Other.."]
 
 
   const [error, setError] = useState('')
@@ -560,8 +553,9 @@ export default function PickupFor({
   const [childVisibility, setChildVisiblity] = useState(false);
 
   useEffect(()=>{
-    console.log(childSeats)
-  }, [childSeats])
+    if(service.includes("Wedding"))
+      setIsOneWay(false);
+  }, [service])
 
   const [showOption, setShowOption] = useState(false);
   const [showCurrentDest, setShowCurrentDest] = useState(false);
@@ -590,6 +584,8 @@ export default function PickupFor({
     <div className={`relative flex flex-col-reverse lg:flex-row ${estimatedPrice? "mt-15 lg:mt-25": "mt-15 lg:mt-20 "} lg:gap-10 lg:mx-15 lg:mb-10 h-max overflow-y-auto lg:min-h-[82%] `}>
     {estimatedPrice ?
     <div className="relative container w-max">
+      <PickupDetails pickup={pickupQuery} destination={destinationQuery} pickupCoords={pickup} destinationCoords={destinationCoords} phone={phone ? phone: null} email={email} pickupDate={selectedDate} pickupTime={selectedTime} price={isOneWay ? estimatedPrice[0] : estimatedPrice} returnPrice={isOneWay ? estimatedPrice[1] : null} numAdultSeats={adults} numChildSeats={childSeats} customerNote={comment} returnDate={isReturn ? returnDate: null} returnTime={returnTime} vehicleID={selectedFleetID} vehicleCategory={selectedFleetValue} duration={!isOneWay ? duration : null} services ={getservices()} />
+
     </div>
     :
     <form ref={formRef} className="relative inset-0 bg-white w-[100%] flex mt-[-20] lg:mt-0 lg:pt-15 lg:p-8 lg:w-max flex-col items-center text-black h-max py-10 rounded-2xl shadow-custom">
