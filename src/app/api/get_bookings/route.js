@@ -5,8 +5,7 @@ import { RefreshAccessToken } from '@/app/actions/validate_token';
 
 export async function GET(req){
     const {searchParams} = new URL(req.url);
-    const size = searchParams.get('page_size');
-    const page = searchParams.get('page');
+
 
     const cookieStore = await cookies();
     let access = cookieStore.get('access')?.value;
@@ -27,7 +26,7 @@ export async function GET(req){
     }
     if(access){
         try{
-            const response = await fetch(`${process.env.API_URL}api/employees/bookings/?page_size=${size}&page=${page}`, {
+            const response = await fetch(`${process.env.API_URL}api/employees/bookings/?${searchParams.toString()}`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json',
@@ -42,7 +41,7 @@ export async function GET(req){
                 }
                 return res
             }else{
-                return NextResponse.json({ status: response.status })
+                return NextResponse.json({ message: "error"} , {status: response.status })
             }
         }catch(err){
             return NextResponse.json({ message: `Error ${err}` }, { status: 500 })

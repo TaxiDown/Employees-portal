@@ -3,7 +3,8 @@ import {NextResponse} from 'next/server'
 import { cookies } from "next/headers";
 import { RefreshAccessToken } from '@/app/actions/validate_token';
 
-export async function GET(req, {params}){
+export async function POST(request, {params}){
+    const body = await request.json();
     const {bookingID, rideID} = await params;
     const cookieStore = await cookies();
     let access = cookieStore.get('access')?.value;
@@ -24,12 +25,14 @@ export async function GET(req, {params}){
     }
     if(access){
         try{
-            const response = await fetch(`${process.env.API_URL}api/employees/bookings/${bookingID}/rides/${rideID}/`, {
-                method: 'GET',
+            const response = await fetch(`${process.env.API_URL}api/employees/bookings/${bookingID}/rides/${rideID}/assign-driver/`, {
+                method: 'POST',
+                body: JSON.stringify(body),
                 headers: {
                 'Content-Type': 'application/json',
                 'Cookie': cookieHeader2 ? cookieHeader2 : cookieHeader,
                 },
+
             });
             const ride =  await response.json();
             if(response.status === 200){

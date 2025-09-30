@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { RefreshAccessToken } from '@/app/actions/validate_token';
 
 export async function GET(req, {params}){
-    const {bookingID, rideID} = await params;
+    const {driverID, rideID} = await params;
     const cookieStore = await cookies();
     let access = cookieStore.get('access')?.value;
     let refresh = cookieStore.get('refresh')?.value;
@@ -24,7 +24,7 @@ export async function GET(req, {params}){
     }
     if(access){
         try{
-            const response = await fetch(`${process.env.API_URL}api/employees/bookings/${bookingID}/rides/${rideID}/`, {
+            const response = await fetch(`${process.env.API_URL}api/employees/drivers/${driverID}/rides/${rideID}/`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json',

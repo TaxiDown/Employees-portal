@@ -13,14 +13,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Clock } from 'lucide-react';
 import { string } from 'zod';
 import RideDetails from './ride_details';
-import BookingRideDetails from './ride_details';
-import Loading from './loading';
+import { BadgeCheck } from 'lucide-react';
+import { BadgeX } from 'lucide-react';
+import Loading from '@/app/[lang]/pickup/loading';
 
-
-export default function BookingDetails({bookingID}) {
+export default function DriverDetails({driverID}) {
     const router = useRouter();
     const [rides, setRides] = useState([]);
-    const [bookingDetails, setBookingDetails] = useState([]);
+    const [driverDetails, setDriverDetails] = useState([]);
     const [notFound, setNotFound] = useState(false);
     const dict = useTranslations("pick")
     const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +28,7 @@ export default function BookingDetails({bookingID}) {
 
     useEffect(()=>{
         const getRides = async()=>{
-            const response = await fetch(`/api/get_booking_details/${bookingID}/get_rides`,{
+            const response = await fetch(`/api/get_driver_details/${driverID}/get_rides`,{
                 method: 'GET',
                 Credentials: 'include',
                 headers:{
@@ -41,8 +41,8 @@ export default function BookingDetails({bookingID}) {
             }else if(response.status === 401)
                 router.push('/unauthorized');
         }
-        const getBookingDetails = async()=>{
-            const response = await fetch(`/api/get_booking_details/${bookingID}`,{
+        const getdriverDetails = async()=>{
+            const response = await fetch(`/api/get_driver_details/${driverID}`,{
                 method: 'GET',
                 Credentials: 'include',
                 headers:{
@@ -51,7 +51,7 @@ export default function BookingDetails({bookingID}) {
             })
             if(response.status === 200){
                 const detailsObject = await response.json();
-                setBookingDetails(detailsObject);
+                setDriverDetails(detailsObject);
             }else if(response.status === 401)
                 router.push('/unauthorized');
             else if(response.status === 404)
@@ -59,7 +59,7 @@ export default function BookingDetails({bookingID}) {
             setIsLoading(false);
 
         }
-        getBookingDetails();
+        getdriverDetails();
         getRides();
     }, []);
 
@@ -95,7 +95,7 @@ export default function BookingDetails({bookingID}) {
 
     const getRide = async(e)=>{
         console.log(e.target.id, "cmcmc")
-        const response = await fetch(`/api/get_booking_details/${bookingID}/get_rides/${e.target.id}/`,{
+        const response = await fetch(`/api/get_driver_details/${driverID}/get_rides/${e.target.id}/`,{
             method: 'GET',
             Credentials: 'include',
             headers:{
@@ -113,8 +113,8 @@ export default function BookingDetails({bookingID}) {
     }
 
     if(notFound)
-       return <NotFound />
-    
+        return <NotFound />
+
     if (isLoading)
         return <Loading />
         
@@ -123,115 +123,44 @@ export default function BookingDetails({bookingID}) {
         {showRide &&
         <RideDetails ride={showRide} setShowRide={setShowRide}/> 
         }
-        <h1 className='font-medium text-2xl my-3'>Booking #{bookingDetails.booking_number}</h1>
+        <h1 className='font-medium text-2xl my-3 flex items-center gap-2'>{driverDetails.first_name} {driverDetails.last_name} {driverDetails.is_active ? <BadgeCheck strokeWidth={2.75} className='text-green-400'/>: <BadgeX strokeWidth={2.75} className='text-red-600'/>}</h1>
         <div  className='flex flex-col lg:flex-row gap-5 justify-between'>
         <div className='flex flex-col gap-3'>
-            <h2 className='font-medium text-lg my-1 text-neutral-500'>Trip Details</h2>
-            <div className="flex gap-4 w-100 max-w-[90%] ">
-              <div className="flex flex-col items-center pt-2">
-              {bookingDetails.dropoff_location ? (
-                  <>
-                  <div className="w-3 h-3 rounded-full bg-green-500 border-2 border-white shadow-md"></div>
-                  <div className="w-px h-14 bg-gray-300 my-2"></div>
-                  <MapPinIcon className="w-4 h-4 text-red-500" />
-                  </>
-              ):
-              <MapPinIcon className="w-5 h-7 text-gray-700" />
-              }
-              </div>
-              <div className="flex flex-col h-full gap-4">
-              <div className="flex items-center space-x-3">
-                <div>
-                  <p className="font-medium">{dict("pickupLocation")}</p>
-                  <p className="text-gray-600">{bookingDetails.pickup_location || "Not provided"}</p>
-                </div>
-              </div>
-              {bookingDetails.dropoff_location &&
-              <div className="flex items-center space-x-3">
-                <div>
-                  <p className="font-medium">{dict("destination")}</p>
-                  <p className="text-gray-600">{bookingDetails.dropoff_location || "Not provided"}</p>
-                </div>
-              </div>
-              }
-              </div>
-             </div>
 
              <div className="flex items-center space-x-3">
                 <Calendar className="w-5 h-5 text-orange-500" />
                 <div>
-                  <p className="font-medium">{dict("pickTime")}</p>
-                  <p className="text-gray-600">{bookingDetails.datetime_pickup.split("T")[0]}{'\u00A0'}{'\u00A0'}{'\u00A0'}{bookingDetails.datetime_pickup.split("T")[1]}</p>
+                  <p className="font-medium">Date Joined</p>
+                  <p className="text-gray-600">{driverDetails.date_joined.split("T")[0]}{'\u00A0'}{'\u00A0'}{'\u00A0'}{driverDetails.date_joined.split("T")[1]}</p>
                 </div>
               </div>
-              {bookingDetails.duration >= 1 &&
-              <div className="flex items-center space-x-3">
-                <Timer className="w-6 h-6 text-orange-500" />
-                <div>
-                  <p className="font-medium">{dict("duration")}</p>
-                  <p className="text-gray-600">{bookingDetails.duration} {bookingDetails.duration ==1 ? pickupDict.hour : pickupDict.hours}</p>
-                </div>
-              </div>
-              }
-              {bookingDetails.return_ride  &&
-              <div className="flex items-center space-x-3">
-                  <Calendar className="w-5 h-5 text-orange-500" />
-                  <div>
-                  <p className="font-medium">{dict("returnTime")}</p>
-                  <p className="text-gray-600">{bookingDetails.datetime_return.split("T")[0]}{'\u00A0'}{'\u00A0'}{'\u00A0'}{bookingDetails.datetime_return.split("T")[1]}</p>
-                  </div>
-              </div>
-              }
         </div>
         {
         <div className='flex flex-col gap-7'>
-        <div className='flex flex-col gap-1'>
-            <h2 className='font-medium text-lg my-1 text-neutral-500'>Contact Information</h2>
-            {bookingDetails.email &&
-            <a href={`mailto:${bookingDetails.email}`} className='flex items-center gap-2 text-lg hover:text-orange-600 '>
-                <Mail size={17}/>
-                {bookingDetails.email}
-            </a>
-            }
-            {bookingDetails.phone_number &&
+        <div className='flex items-center space-x-3'>
+            <Mail size={17} className='w-5 h-5 text-orange-500' />
+            <div>
+                <p className="font-medium text-sm">Contact Information</p>
+                <a href={`mailto:${driverDetails.email}`} className='flex items-center gap-2 text-gray-600 text-lg hover:text-orange-600 '>
+                    {driverDetails.email}
+                </a>
+            </div>
+            {driverDetails?.phone_number &&
             <div className='flex items-center gap-2 text-lg'>
                 <Phone size={17}/>
-                {bookingDetails.phone_number}
+                {driverDetails.phone_number}
             </div>
             }
         </div>
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-500">
-              Seating Requirements
-            </h3>
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-foreground">
-                  Adult Seats: <span className="font-medium">{bookingDetails.num_adult_seats}</span>
-                </span>
-              </div>
-
-              {bookingDetails.extra_child_seats.map((childSeat, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <span className="text-sm text-foreground">
-                     {childSeat.seat_type}:
-                    <span className="font-medium ml-1">{childSeat.num_seats} seats</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
          }   
         </div>
-        {bookingDetails?.services?.service &&
+        {driverDetails?.services?.service &&
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-2 mt-5">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-600">
               Service 
-              <Badge variant="outline" className='text-orange-700'>{bookingDetails.services.service}</Badge>
+              <Badge variant="outline" className='text-orange-700'>{driverDetails.services.service}</Badge>
 
             </h3>
           </div>
@@ -239,7 +168,7 @@ export default function BookingDetails({bookingID}) {
         }
         <div>
         <div className="overflow-x-auto mt-3 ">
-        <h2 className='font-medium text-lg my-2 text-neutral-600'>Booking Rides</h2>
+        <h2 className='font-medium text-lg my-2 text-neutral-600'>Driver Rides</h2>
 
           <Table>
             <TableHeader>

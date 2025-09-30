@@ -39,7 +39,7 @@ export async function GET(req, {params}){
                 }
                 return res
             }else{
-                return NextResponse.json({ status: response.status })
+                return NextResponse.json({ message: "error"} , {status: response.status })
             }
         }catch(err){
             return NextResponse.json({ message: `Error ${err}` }, { status: 500 })
