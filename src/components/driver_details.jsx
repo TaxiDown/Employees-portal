@@ -15,7 +15,7 @@ import { string } from 'zod';
 import RideDetails from './ride_details';
 import { BadgeCheck } from 'lucide-react';
 import { BadgeX } from 'lucide-react';
-import Loading from '@/app/[lang]/pickup/loading';
+import Loading from './loading';
 
 export default function DriverDetails({driverID}) {
     const router = useRouter();
@@ -117,7 +117,7 @@ export default function DriverDetails({driverID}) {
 
     if (isLoading)
         return <Loading />
-        
+
   return (
     <div className='w-full min-h-screen h-max px-12 mt-30 mb-10 lg:w-[70%]'>
         {showRide &&

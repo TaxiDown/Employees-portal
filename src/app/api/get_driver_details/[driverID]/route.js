@@ -24,6 +24,7 @@ export async function GET(req, {params}){
     }
     if(access){
         try{
+            console.log(driverID)
             const response = await fetch(`${process.env.API_URL}api/employees/drivers/${driverID}/`, {
                 method: 'GET',
                 headers: {

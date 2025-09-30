@@ -80,9 +80,9 @@ export default function RideDetails({ ride, setShowRide }) {
     }, [drivers, assignedDriver])
 
     useEffect(()=>{
-        if( currentStatus ==="Completed")
+        if( currentStatus ==="Completed" || currentStatus ==="Canceled")
             setStatusOptions([])
-        else if(!assignedDriver || currentStatus ==="Canceled"){
+        else if(!assignedDriver){
             setStatusOptions([
                 {
                     value: "Pending",

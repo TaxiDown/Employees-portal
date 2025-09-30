@@ -242,9 +242,9 @@ export default function BookingsTable() {
     }
   }
 
-  if (isLoading) {
-    <Loading />
-  }
+  if (isLoading)
+    return <Loading />
+  
   return (
     <div className='mx-5 md:mx-23 my-22'>
       <div className='w-full h-15 relative flex justify-between items-center mb-5'>

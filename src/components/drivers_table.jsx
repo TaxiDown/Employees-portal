@@ -16,6 +16,7 @@ import { Clock8 } from 'lucide-react';
 import { ArrowDownUp } from 'lucide-react';
 import { SlidersHorizontal } from 'lucide-react';
 import { Search } from 'lucide-react';
+import Loading from './loading';
 
 export default function DriversTable() {
     const [drivers, setDrivers] = useState([]);
@@ -85,17 +86,11 @@ export default function DriversTable() {
         }
 
         const getdriverDetails=(driverNum)=>{
-          router.push(`/driver_details/${driverNum}`);
+          router.push(`/drivers/${driverNum}`);
         }
 
-  if(isLoading){
-    <div className="flex items-center justify-center min-h-screen bg-stone-100 z-5000">
-        <div className="flex flex-col items-center gap-4">
-            <div className="w-20 h-20 border-4 border-yellow-200 border-t-yellow-600 rounded-full animate-spin"></div>
-            <p className="text-black font-lg text-3xl">Loading ...</p>
-        </div>
-    </div>
-  }
+  if(isLoading)
+    <Loading />
   return (
     <div className='mx-5 md:w-[70%] my-22'>            
     <div className="w-full">
