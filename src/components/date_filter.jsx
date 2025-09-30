@@ -112,88 +112,86 @@ export function DateRangeFilter({ setStart, setEnd }) {
 
     return (
         <div className="flex items-center gap-2">
-            <Popover open={isOpen} onOpenChange={setIsOpen}>
-                <PopoverTrigger asChild>
-                    <Button
-                        variant="outline"
-                        className={cn(
-                            "justify-start gap-2 font-normal text-left",
-                            !startDate && !endDate && "text-muted-foreground",
-                        )}
-                    >
-                        <CalendarIcon className="h-4 w-4" />
-                        <span className="text-sm">{formatDateRange()}</span>
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
-                    <div className="flex">
-                        {/* Presets sidebar */}
-                        <div className="flex flex-col gap-1 border-r border-border p-3">
-                            <div className="text-xs font-medium text-muted-foreground mb-2">Presets</div>
-                            {presets.map((preset) => (
-                                <Button
-                                    key={preset.label}
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handlePresetClick(preset)}
-                                    className="justify-start text-sm font-normal"
-                                >
-                                    {preset.label}
-                                </Button>
-                            ))}
-                        </div>
-
-                        {/* Calendar section */}
-                        <div className="p-3">
-                            <div className="flex gap-3">
-                                <div className="flex flex-col gap-2">
-                                    <div className="text-xs font-medium text-muted-foreground">Start Date</div>
-                                    <Calendar
-                                        mode="single"
-                                        selected={tempStartDate}
-                                        onSelect={(date) => setTempStartDate(date)}
-                                        disabled={(date) => (tempEndDate ? date > tempEndDate : false)}
-                                        initialFocus
-                                    />
-                                </div>
-                                <div className="flex flex-col gap-2">
-                                    <div className="text-xs font-medium text-muted-foreground">End Date</div>
-                                    <Calendar
-                                        mode="single"
-                                        selected={tempEndDate}
-                                        onSelect={(date) => setTempEndDate(date)}
-                                        disabled={(date) => (tempStartDate ? date < tempStartDate : false)}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-border">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        setTempStartDate(startDate)
-                                        setTempEndDate(endDate)
-                                        setIsOpen(false)
-                                    }}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button size="sm" onClick={handleApplyFilter} disabled={!tempStartDate || !tempEndDate}>
-                                    Apply Filter
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </PopoverContent>
-            </Popover>
-
-            {(startDate || endDate) && (
-                <Button variant="ghost" size="icon" onClick={handleClear} className="h-9 w-9">
-                    <X className="h-4 w-4" />
-                    <span className="sr-only">Clear dates</span>
-                </Button>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            className={cn(
+              "justify-start gap-2 font-normal text-left",
+              !startDate && !endDate && "text-muted-foreground",
             )}
-        </div>
+          >
+            <CalendarIcon className="h-4 w-4" />
+            <span className="text-sm hidden sm:inline">{formatDateRange()}</span>
+            <span className="text-sm sm:hidden">Filter</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto max-w-80 sm:max-w-max p-0" align="end">
+          <div className="flex sm:flex-row flex-col">
+            <div className="flex sm:flex-col flex-row gap-1 md:border-r border-b md:border-b-0 border-border p-3 sm:w-max  overflow-x-auto sm:overflow-x-visible">
+              <div className="text-xs font-medium text-muted-foreground mb-0 md:mb-2 whitespace-nowrap md:whitespace-normal">
+                Presets
+              </div>
+              {presets.map((preset) => (
+                <Button
+                  key={preset.label}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handlePresetClick(preset)}
+                  className="justify-start text-sm font-normal whitespace-nowrap"
+                >
+                  {preset.label}
+                </Button>
+              ))}
+            </div>
+            <div className="p-3 md:p-3">
+              <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-muted-foreground">Start Date</div>
+                  <Calendar
+                    mode="single"
+                    selected={tempStartDate}
+                    onSelect={(date) => setTempStartDate(date)}
+                    disabled={(date) => (tempEndDate ? date > tempEndDate : false)}
+                    initialFocus
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="text-xs font-medium text-muted-foreground">End Date</div>
+                  <Calendar
+                    mode="single"
+                    selected={tempEndDate}
+                    onSelect={(date) => setTempEndDate(date)}
+                    disabled={(date) => (tempStartDate ? date < tempStartDate : false)}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-3 pt-3 border-t border-border">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setTempStartDate(startDate)
+                    setTempEndDate(endDate)
+                    setIsOpen(false)
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button size="sm" onClick={handleApplyFilter} disabled={!tempStartDate && !tempEndDate}>
+                  Apply Filter
+                </Button>
+              </div>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+      {(startDate || endDate) && (
+        <Button variant="ghost" size="icon" onClick={handleClear} className="h-9 w-9">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Clear dates</span>
+        </Button>
+      )}
+    </div>
     )
 }

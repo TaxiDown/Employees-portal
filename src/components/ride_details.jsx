@@ -213,6 +213,7 @@ export default function RideDetails({ ride, setShowRide }) {
                                         )}
                                     </div>
                                 </div>
+                                {ride.status !== "Canceled" && ride.status !== "Completed" &&
                                 <Dialog className="z-2000 max-w-[70%]" open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                                     <DialogTrigger asChild>
                                         <Button variant="outline" size="sm" className="text-xs bg-transparent">
@@ -248,6 +249,7 @@ export default function RideDetails({ ride, setShowRide }) {
                                         </div>
                                     </DialogContent>
                                 </Dialog>
+                                }
                             </div>
                         </div>
 

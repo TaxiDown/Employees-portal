@@ -92,10 +92,10 @@ export default function DriversTable() {
   if(isLoading)
     <Loading />
   return (
-    <div className='mx-5 md:w-[70%] my-22'>            
+    <div className='mx-5 md:w-[70%] my-22 overflow-x-auto'>            
     <div className="w-full">
       <h1 className='text-black font-bold text-3xl m-2'>Drivers Data</h1>
-      <div>
+      <div className="w-full">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>

@@ -74,6 +74,18 @@ export default function Navbar() {
           >
             {dict("home")}
           </Link>
+          <Link
+            href={`/drivers`}
+            className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
+          >
+            {dict("drivers")}
+          </Link>
+          <Link
+            href={`/pickup`}
+            className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
+          >
+            {dict("create")}
+          </Link>
           {loggedIn ? (
             <>
               
@@ -109,16 +121,20 @@ export default function Navbar() {
             >
               {dict("home")}
             </Link>
-            
+            <Link
+              href={`/drivers`}
+              className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
+            >
+              {dict("drivers")}
+            </Link>
+            <Link
+              href={`/pickup`}
+              className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
+            >
+              {dict("create")}
+            </Link>
             {loggedIn ? (
               <>
-                <Link
-                  href={`/bookings`}
-                  className="text-yellow-1000 text-base font-medium hover:text-yellow-600 transition-colors duration-200 py-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {dict("bookingTitle")}
-                </Link>
                 <button
                   onClick={() => {
                     logout()

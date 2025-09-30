@@ -246,8 +246,8 @@ export default function BookingsTable() {
     return <Loading />
   
   return (
-    <div className='mx-5 md:mx-23 my-22'>
-      <div className='w-full h-15 relative flex justify-between items-center mb-5'>
+    <div className='mx-5 lg:mx-23 my-22'>
+      <div className='w-full flex-col md:flex-row min-h-15 h-max relative flex md:justify-between items-center mb-5 gap-5'>
 
         <div className='flex flex-row gap-2 items-center'>
           <SlidersHorizontal />
@@ -264,9 +264,9 @@ export default function BookingsTable() {
             </SelectContent>
           </Select>
         </div>
-        <div className='relative'>
-          <input className='w-90 h-5 p-5 rounded-full border border-neutral-400 focus:border-neutral-600 valid:border-neutral-600 outline-none' placeholder="Search with booking number" onChange={(e) => setSearchQuery(e.target.value)} value={searchQuery} required />
-          <Search className='absolute top-2 right-4 text-neutral-500' />
+        <div className='relative w-max'>
+          <input className='w-90 max-w-[90%] h-5 p-5 rounded-full border border-neutral-400 focus:border-neutral-600 valid:border-neutral-600 outline-none' placeholder="Search with booking number" onChange={(e) => setSearchQuery(e.target.value)} value={searchQuery} required />
+          <Search className='absolute top-2 right-12 text-neutral-500' />
         </div>
 
         <DateRangeFilter setStart={setStartDate} setEnd={setEndDate} />
@@ -287,8 +287,8 @@ export default function BookingsTable() {
                   <TableHead className="font-semibold">Booking Number</TableHead>
                   <TableHead className="font-semibold">Type</TableHead>
                   <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold">Pickup Details</TableHead>
                   <TableHead className="font-semibold">Vehicle</TableHead>
+                  <TableHead className="font-semibold">Pickup Details</TableHead>
                   <TableHead className="font-semibold flex items-center hover:text-orange-500 cursor-pointer" onClick={sortDate}>
                     <ArrowDownUp className="h-4 w-4 mr-2" /> Date
                   </TableHead>
