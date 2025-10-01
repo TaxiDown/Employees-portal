@@ -17,7 +17,8 @@
     "LogoutSuccessful": "Logout successful.",
     "choose_service": "Or Choose One of Our Services",
     "drivers": "Drivers",
-    "create": "Creat Booking"  
+    "create": "Create Booking" ,
+    "bookings": "Bookings"
   },"ride":{
     "undetermined":"Price Determined on Call",
     "cancel": "Cancel", 

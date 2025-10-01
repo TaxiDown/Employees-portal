@@ -72,7 +72,7 @@ export default function Navbar() {
             href={`/`}
             className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
           >
-            {dict("home")}
+            {dict("bookings")}
           </Link>
           <Link
             href={`/drivers`}
@@ -119,7 +119,7 @@ export default function Navbar() {
               className="text-yellow-1000 text-base font-medium hover:text-yellow-600 transition-colors duration-200 py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              {dict("home")}
+              {dict("bookings")}
             </Link>
             <Link
               href={`/drivers`}
