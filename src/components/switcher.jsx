@@ -61,7 +61,8 @@ export default function LanguageSwitcher() {
     }
 
     setIsOpen(false)
-    router.push(newPath)
+    router.push(newPath);
+    router.refresh()
   }
 
   const currentLanguage = languages.find((lang) => lang.code === currentLocale) || languages[0]

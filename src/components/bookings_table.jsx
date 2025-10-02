@@ -150,7 +150,7 @@ export default function BookingsTable() {
   if (isLoading) return <Loading />
 
   return (
-    <div className='mx-5 lg:mx-23 my-22'>
+    <div className='mx-5 lg:mx-23 mb-22 mt-1'>
       <div className='w-full flex-col md:flex-row min-h-15 h-max relative flex md:justify-between items-center mb-5 gap-5'>
         <div className='flex flex-row gap-2 items-center'>
           <SlidersHorizontal />
