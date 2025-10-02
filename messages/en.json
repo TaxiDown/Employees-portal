@@ -11,21 +11,16 @@
     "time": "Time",
     "getOffer": "Get Offer",
     "home": "Home",
-    "contactUs": "Contact us", 
+    "contactUs": "Contact us",
     "bookingTitle": "Bookings",
-    "logoutTitle": "Logout", 
+    "logoutTitle": "Logout",
     "LogoutSuccessful": "Logout successful.",
     "choose_service": "Or Choose One of Our Services",
     "drivers": "Drivers",
-    "create": "Create Booking" ,
+    "create": "Create Booking",
     "bookings": "Bookings"
-  },"ride":{
-    "undetermined":"Price Determined on Call",
-    "cancel": "Cancel", 
-    "cancelRide": "Cancel Ride", 
-    "cancelConfirm": "You want to cancel this ride?"
   },
-  "auth":{
+  "auth": {
     "loginTitle": "Login",
     "logoutTitle": "Logout",
     "createAccountTitle": "Create Your Account",
@@ -43,7 +38,8 @@
     "emailConfirmed": "Email Confirmed",
     "goToLogin": "Go to Login",
     "emailVerifiedMessage": "Your email has been successfully verified. You can now log In to your account!"
-  }, "login":{
+  },
+  "login": {
     "loginTitle": "Login",
     "forgotPassword": "Forgot password?",
     "dontHaveAccount": "Don't have an account?",
@@ -51,7 +47,7 @@
     "password": "Password",
     "createAccount": "Create Account"
   },
-   "signup":{
+  "signup": {
     "confirmPassword": "Confirm Password",
     "continue": "Continue",
     "fname": "First Name",
@@ -80,25 +76,25 @@
     "alreadyHaveAccount": "Already have an account?",
     "loginTitle": "Login"
   },
-   "unauthorized":{
+  "unauthorized": {
     "error": "You are not authorized to view this page.",
     "loginTitle": "Login",
     "goHome": "Go to home page"
   },
-   "confirmEmail":{
-    "goLogin": "Go to Login", 
-    "confirmed" : "Your email has been successfully verified. You can now log In to your account!",
+  "confirmEmail": {
+    "goLogin": "Go to Login",
+    "confirmed": "Your email has been successfully verified. You can now log In to your account!",
     "invalid": "Invalid confirmation link.",
-    "emailConfirmed" : "Email Confirmed",
-    "invalidLink" : "Invalid Link"
+    "emailConfirmed": "Email Confirmed",
+    "invalidLink": "Invalid Link"
   },
-   "confirmPassword":{
+  "confirmPassword": {
     "reset": "Reset Password",
     "email": "Email",
     "invalid": "Invalid Email",
     "sendReset": "Send Reset Email"
   },
-   "resetPassword": {
+  "resetPassword": {
     "title": "Reset Password",
     "passwordLabel": "Password*",
     "confirmLabel": "Confirm Password*",
@@ -112,17 +108,17 @@
       "special": "Includes special characters"
     }
   },
-  "pick":{
+  "pick": {
     "getOffer": "Get Offer",
     "oneWay": "One-way",
     "perHour": "Per Hour",
     "estimatedPrice": "Estimated Price",
     "chooseVehicle": "Choose Vehicle Type",
     "createRide": "Create Ride",
-    "undetermined":"Price will be Determined on Call",
+    "undetermined": "Price will be Determined on Call",
     "chooseValidP": "Choose from valid pickup locations.",
     "chooseValidD": "Choose from valid destinations.",
-    "date": "Date", 
+    "date": "Date",
     "pickDate": "Pick a date",
     "time": "Time",
     "vehicleType": "Vehicle type",
@@ -149,21 +145,146 @@
     "cash": "Cash on Delivery",
     "credit": "Credit",
     "confirm": "Confirm Booking",
-    "rideCreated": "Ride Created Successfully!", 
+    "rideCreated": "Ride Created Successfully!",
     "error": "An error occurred while creating the booking. Please try again.",
     "invalidPhone": "please enter a valid phone number",
     "hourPrice": "Price Per Hour",
     "duration": "Trip Duration",
     "hour": "hour",
-    "hours": "hours", 
-    "services" : "Choose one of our services",
-    "ourServices": "Services", 
-    "luggage":"Luggage", 
+    "hours": "hours",
+    "services": "Choose one of our services",
+    "ourServices": "Services",
+    "luggage": "Luggage",
     "flight": "Flight Number",
     "save": "Save",
-    "childern_seats":"Children seats",
+    "childern_seats": "Children seats",
     "email": "Email",
     "booking": "Booking",
-    "notFound": "This page could not be found."
+    "notFound": "This page could not be found.",
+    "tripDetails": "Trip Details",
+    "notProvided": "Not provided",
+    "contactInfo": "Contact Information",
+    "seatingRequirements": "Seating Requirements",
+    "adultSeats": "Adult Seats",
+    "seats": "seats",
+    "service": "Service",
+    "bookingRides": "Booking Rides",
+    "rideId": "Ride ID",
+    "status": "Status",
+    "returnRide": "Return ride",
+    "driver": "Driver",
+    "unassigned": "Unassigned",
+    "noRecords": "No booking records found.",
+    "loading": "Loading ..."
+  },
+  "table": {
+    "all": "All",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "canceled": "Canceled",
+    "perHour": "Per Hour",
+    "returnBooking": "Return Booking",
+    "oneWay": "One Way",
+    "filterByStatus": "Filter by status",
+    "searchBooking": "Search with booking number",
+    "bookingNumber": "Booking Number",
+    "type": "Type",
+    "status": "Status",
+    "vehicleCategory": "Vehicle Category",
+    "pickupDetails": "Pickup Details",
+    "date": "Date",
+    "contactInfo": "Contact Information",
+    "passengers": "Passengers",
+    "noContact": "No contact info",
+    "adults": "Adults",
+    "childSeats": "Child seats",
+    "noRecords": "No booking records found.",
+    "showing": "Showing",
+    "to": "to",
+    "of": "of",
+    "entries": "entries",
+    "previous": "Previous",
+    "next": "Next"
+  }, 
+  "dateFilter": {
+    "next90": "Next 90 days",
+    "next30": "Next 30 days",
+    "next7": "Next 7 days",
+    "today": "Today",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "last90": "Last 90 days",
+    "selectRange": "Select date range",
+    "from": "From",
+    "until": "Until",
+    "filter": "Filter",
+    "presets": "Presets",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "cancel": "Cancel",
+    "apply": "Apply Filter",
+    "clearDates": "Clear dates"
+  }, 
+  "driver": {
+    "dateJoined": "Date Joined",
+    "contactInfo": "Contact Information",
+    "service": "Service",
+    "driverRides": "Driver Rides",
+    "rideId": "Ride ID",
+    "status": "Status",
+    "returnRide": "Return ride",
+    "driver": "Driver",
+    "unassigned": "Unassigned",
+    "noRecords": "No booking records found."
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "canceled": "Cancelled"
+  },
+  "drivers": {
+    "title": "Drivers Data",
+    "searchPlaceholder": "Search with driver name",
+    "driverId": "Driver ID",
+    "name": "Name",
+    "email": "Email",
+    "isActive": "Is Active",
+    "dateJoined": "Date Joined",
+    "noRecords": "No driver records found.",
+    "showing": "Showing {start} to {end} of {total} entries",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "common": {
+    "loading": "Loading ..."
+  },
+  "modal": {
+    "ride_created": "Ride Created Successfully!",
+    "limit_reached": "You reached the limit, please try again after 15 minutes."
+  },
+  "ride": {
+    "undetermined": "Price Determined on Call",
+    "cancel": "Cancel",
+    "cancelRide": "Cancel Ride",
+    "cancelConfirm": "You want to cancel this ride?",
+    "ride": "Ride",
+    "booking_id": "Booking ID",
+    "price": "Price",
+    "duration": "Duration",
+    "payment_status": "Payment Status",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "driver": "Driver",
+    "unassigned": "Unassigned",
+    "assign_driver": "Assign Driver",
+    "change_driver": "Change Driver",
+    "select_driver": "Select a driver from the available list below.",
+    "search_driver": "Search with driver name",
+    "return_ride": "Return Ride",
+    "yes": "Yes",
+    "no": "No"
   }
 }
