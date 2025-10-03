@@ -15,7 +15,7 @@ export default function RideDetails({ ride, setShowRide }) {
 
   const [assignedDriverDetails, setAssignedDriverDetails] = useState("")
   const [currentStatus, setCurrentStatus] = useState(ride.status)
-  const [assignedDriver, setAssignedDriver] = useState(ride.id_driver.id)
+  const [assignedDriver, setAssignedDriver] = useState(ride?.id_driver?.id)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [drivers, setDrivers] = useState([])
   const [statusOptions, setStatusOptions] = useState([])
