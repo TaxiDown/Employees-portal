@@ -80,12 +80,6 @@ export default function Navbar() {
           >
             {dict("drivers")}
           </Link>
-          <Link
-            href={`/pickup`}
-            className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
-          >
-            {dict("create")}
-          </Link>
           {loggedIn ? (
             <>
               
@@ -126,12 +120,6 @@ export default function Navbar() {
               className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
             >
               {dict("drivers")}
-            </Link>
-            <Link
-              href={`/pickup`}
-              className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
-            >
-              {dict("create")}
             </Link>
             {loggedIn ? (
               <>

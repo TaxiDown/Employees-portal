@@ -206,7 +206,7 @@
     "entries": "entries",
     "previous": "Previous",
     "next": "Next"
-  }, 
+  },
   "dateFilter": {
     "next90": "Next 90 days",
     "next30": "Next 30 days",
@@ -225,7 +225,7 @@
     "cancel": "Cancel",
     "apply": "Apply Filter",
     "clearDates": "Clear dates"
-  }, 
+  },
   "driver": {
     "dateJoined": "Date Joined",
     "contactInfo": "Contact Information",
@@ -286,5 +286,38 @@
     "return_ride": "Return Ride",
     "yes": "Yes",
     "no": "No"
+  },
+  "xmlUpload": {
+    "title": "Upload XML File",
+    "description": "Upload your XML file for processing and validation",
+    "processing": "Processing file...",
+    "errorTitle": "Error",
+    "errors": {
+      "invalidType": "Invalid file type. Please upload an XML file.",
+      "tooLarge": "File size exceeds 10MB limit.",
+      "invalidXml": "Invalid XML structure. Please check your file.",
+      "readFail": "Failed to read file. Please try again."
+    },
+    "dragDrop": {
+      "title": "Drag & Drop your XML file here",
+      "subtitle": "or click to browse",
+      "hint": "Supported format: XML (Max size: 10MB)"
+    },
+    "fileDetails": {
+      "title": "File Details",
+      "name": "Name",
+      "size": "Size",
+      "status": "Status"
+    },
+    "buttons": {
+      "upload": "Upload XML File",
+      "browse": "Browse Files",
+      "remove": "Remove File",
+      "process": "Process File"
+    },
+    "status": {
+      "valid": "Valid XML structure",
+      "ready": "Ready for processing"
+    }
   }
 }

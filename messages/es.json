@@ -247,7 +247,7 @@
     "cancel": "Cancelar",
     "apply": "Aplicar filtro",
     "clearDates": "Borrar fechas"
-  }, 
+  },
   "driver": {
     "dateJoined": "Fecha de ingreso",
     "contactInfo": "Información de contacto",
@@ -286,5 +286,38 @@
   "modal": {
     "ride_created": "¡Viaje creado con éxito!",
     "limit_reached": "Has alcanzado el límite, inténtalo de nuevo en 15 minutos."
+  },
+  "xmlUpload": {
+    "title": "Subir archivo XML",
+    "description": "Sube tu archivo XML para procesarlo y validarlo",
+    "processing": "Procesando archivo...",
+    "errorTitle": "Error",
+    "errors": {
+      "invalidType": "Tipo de archivo no válido. Por favor sube un archivo XML.",
+      "tooLarge": "El archivo excede el límite de 10 MB.",
+      "invalidXml": "Estructura XML no válida. Verifica tu archivo.",
+      "readFail": "Error al leer el archivo. Inténtalo de nuevo."
+    },
+    "dragDrop": {
+      "title": "Arrastra y suelta tu archivo XML aquí",
+      "subtitle": "o haz clic para buscar",
+      "hint": "Formato soportado: XML (Tamaño máximo: 10 MB)"
+    },
+    "fileDetails": {
+      "title": "Detalles del archivo",
+      "name": "Nombre",
+      "size": "Tamaño",
+      "status": "Estado"
+    },
+    "buttons": {
+      "upload": "Subir archivo XML",
+      "browse": "Buscar archivos",
+      "remove": "Eliminar archivo",
+      "process": "Procesar archivo"
+    },
+    "status": {
+      "valid": "Estructura XML válida",
+      "ready": "Listo para procesar"
+    }
   }
 }
