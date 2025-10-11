@@ -14,10 +14,18 @@ export default function SuccessModal({ type }) {
             </h2>
           </div>
         </div>
-      ) : type === 'limit' && (
+      ) : (type === 'limit' ? (
         <div className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center bg-black/50 h-full w-screen">
           <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-full">
             <h2 className="text-red-600 text-xl font-semibold mb-2">
+              {dict("limit_reached")}
+            </h2>
+          </div>
+        </div>
+      ):
+        <div className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center bg-black/50 h-full w-screen">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-full">
+            <h2 className="text-green-600 text-xl font-semibold mb-2">
               {dict("limit_reached")}
             </h2>
           </div>

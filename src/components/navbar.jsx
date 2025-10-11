@@ -6,7 +6,7 @@ import LanguageSwitcher from './switcher';
 import {useTranslations} from 'next-intl';
 
 
-export default function Navbar() {
+export default function Navbar({role}) {
   const dict = useTranslations('lang');
   const [loggedIn, setLoggedIn] = useState(false);
   const [loggedOut, setLogedOut] = useState(false);
@@ -59,7 +59,7 @@ export default function Navbar() {
       loggedOut && 
       <div className="fixed inset-0 top-0 left-0 z-50 flex items-center justify-center bg-black/50 h-full w-screen">
         <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-sm w-full h-30 flex items-center justify-center">
-          <h2 className="text-green-600 text-xl font-semibold mb-2">{dict("successLogout")}</h2>
+          <h2 className="text-green-600 text-xl font-semibold mb-2">{dict("LogoutSuccessful")}</h2>
         </div>
       </div>
     }
@@ -74,12 +74,14 @@ export default function Navbar() {
           >
             {dict("bookings")}
           </Link>
+          {(role === 'Fleet manager' || role === 'Super fleet manager') ?
           <Link
             href={`/drivers`}
             className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
           >
             {dict("drivers")}
           </Link>
+          :<></>}
           {loggedIn ? (
             <>
               
@@ -115,12 +117,14 @@ export default function Navbar() {
             >
               {dict("bookings")}
             </Link>
+            {(role === 'Fleet manager' || role === 'Super fleet manager') ?
             <Link
               href={`/drivers`}
               className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
             >
               {dict("drivers")}
             </Link>
+            :<></>}
             {loggedIn ? (
               <>
                 <button

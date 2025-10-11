@@ -14,9 +14,9 @@ export default async function UnauthorizedPage() {
       <Link href={`/login`} className="text-white mt-7 py-3 px-6 bg-black inline-block rounded-md text-lg hover:border-2 hover:bg-white hover:text-black hover:border-black">
         {dict("loginTitle")}
       </Link>
-      <Link href={`/`} className="text-gray-600 mt-2 px-6 inline-block rounded-md text-sm hover:text-black">
+      {/*<Link href={`/`} className="text-gray-600 mt-2 px-6 inline-block rounded-md text-sm hover:text-black">
         {dict("goHome")}
-      </Link>
+      </Link>*/}
     </div>
   );
 }

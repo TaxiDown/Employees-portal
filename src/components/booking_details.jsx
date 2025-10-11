@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import RideDetails from './ride_details';
 import Loading from './loading';
 import Link from 'next/link';
+import { MessageCircleMore } from 'lucide-react';
 
 export default function BookingDetails({ bookingID }) {
   const router = useRouter();
@@ -119,9 +120,12 @@ export default function BookingDetails({ bookingID }) {
       <h1 className='font-medium text-2xl my-3'>
         {dict("booking")} #{bookingDetails.booking_number}
       </h1>
+      <h2 className='font-medium text-xl my-3 text-neutral-700'>
+        {dict("exbooking")} #{bookingDetails.booking_number_ex}
+      </h2>
 
       <div className='flex flex-col lg:flex-row gap-5 justify-between'>
-        <div className='flex flex-col gap-3'>
+        <div className='flex flex-col gap-3 w-[80%]'>
           <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("tripDetails")}</h2>
           <div className="flex gap-4 w-100 max-w-[90%] ">
             <div className="flex flex-col items-center pt-2">
@@ -180,9 +184,20 @@ export default function BookingDetails({ bookingID }) {
               </div>
             </div>
           }
+          {bookingDetails.customer_note &&
+            <div className="flex items-center space-x-3 w-[70%]">
+              <div>
+                <MessageCircleMore strokeWidth={2.3} size={22} className="text-orange-500" />
+              </div>
+              <div>
+                <p className="font-medium"> {dict("comments")}</p>
+                <p className="text-gray-600">{bookingDetails.customer_note}</p>
+              </div>
+            </div>
+          }
         </div>
 
-        <div className='flex flex-col gap-7'>
+        <div className='flex flex-col gap-7 '>
           <div className='flex flex-col gap-1'>
             <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("contactInfo")}</h2>
             {bookingDetails.email &&
@@ -218,6 +233,19 @@ export default function BookingDetails({ bookingID }) {
                 </div>
               ))}
             </div>
+          </div>
+          <div className='flex flex-col gap-1'>
+            <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("extraInfo")}</h2>
+            {bookingDetails.extra_info["Customer Name"] &&
+              <div className='flex items-center gap-2 '>
+                {dict("name")}: {bookingDetails.extra_info["Customer Name"]}
+              </div>
+            }
+            {bookingDetails.extra_info["Order ID"] &&
+              <div className='flex items-center gap-2'>
+                {dict("orderId")}: {bookingDetails.extra_info["Order ID"]}
+              </div>
+            }
           </div>
         </div>
       </div>

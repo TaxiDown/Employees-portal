@@ -6,7 +6,6 @@ export default async function Booking({params}) {
     const {ID} = await params;
   return (
     <div className='flex justify-center'>
-        <Navbar />
         <BookingDetails bookingID={ID}/>
     </div>
   )

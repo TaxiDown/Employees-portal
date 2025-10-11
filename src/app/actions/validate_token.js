@@ -6,7 +6,7 @@ export async function RefreshAccessToken(refresh) {
     }
   
     try {
-      const res = await fetch(`${process.env.API_URL}/api/auth/token/refresh/`, {
+      const res = await fetch(`${process.env.API_URL}api/auth/token/refresh/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

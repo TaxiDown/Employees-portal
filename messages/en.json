@@ -128,7 +128,7 @@
     "adults": "Adults",
     "childern": "Childern",
     "phone": "Phone Number",
-    "comments": "Comments",
+    "comments": "Customer note",
     "back": "Back to Form",
     "selectPickup": "Click on the map to select pickup location",
     "selectDest": "Click on the map to select destination",
@@ -175,7 +175,11 @@
     "driver": "Driver",
     "unassigned": "Unassigned",
     "noRecords": "No booking records found.",
-    "loading": "Loading ..."
+    "loading": "Loading ...",
+    "extraInfo": "Extra Information", 
+    "name": "Name",
+    "orderId": "Order ID", 
+    "exbooking":"Ex-Booking"
   },
   "table": {
     "all": "All",
