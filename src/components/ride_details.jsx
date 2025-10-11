@@ -10,8 +10,8 @@ import { useTranslations } from "next-intl"
 
 export default function RideDetails({ ride, setShowRide }) {
   const router = useRouter()
-  const dict = useTranslations("ride")      // ride-specific strings
-  const statusDict = useTranslations("status") // centralized status translations
+  const dict = useTranslations("ride");
+  const statusDict = useTranslations("status");
 
   const [assignedDriverDetails, setAssignedDriverDetails] = useState("")
   const [currentStatus, setCurrentStatus] = useState(ride.status)

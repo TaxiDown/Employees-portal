@@ -23,6 +23,9 @@ export function XmlFileUploadDialog() {
   const [error, setError] = useState(null)
   const fileInputRef = useRef(null)
 
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadSuccess, setUploadSuccess] = useState(false)
+
   const validateXmlFile = (file) => file.name.toLowerCase().endsWith(".xml")
 
   const parseXmlContent = async (file) => {
@@ -105,14 +108,55 @@ export function XmlFileUploadDialog() {
     if (fileInputRef.current) fileInputRef.current.value = ""
   }
 
-  const handleProcessFile = () => {
-    console.log("Processing file:", uploadedFile)
-    setOpen(false)
-    setTimeout(() => {
-      setUploadedFile(null)
-      setError(null)
-    }, 300)
+
+  
+  const handleProcessFile = async () => {
+    if (!uploadedFile) return
+
+    setIsUploading(true)
+    setError(null)
+    setUploadSuccess(false)
+
+    try {
+      const formData = new FormData()
+      const fileInput = fileInputRef.current
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        formData.append("file", fileInput.files[0])
+      } else {
+        throw new Error("File not found")
+      }
+
+      const response = await fetch("/api/upload_xml", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Upload failed")
+      }
+
+      setUploadSuccess(true)
+
+      setTimeout(() => {
+        setOpen(false)
+        setUploadedFile(null)
+        setError(null)
+        setUploadSuccess(false)
+        window.location.reload()
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ""
+        }
+      }, 2000)
+    } catch (err) {
+      setError(err.message || "Failed to upload file. Please try again.")
+    } finally {
+      setIsUploading(false)
+    }
   }
+  
+  
 
   const formatFileSize = (bytes) => {
     if (bytes < 1024) return bytes + " B"

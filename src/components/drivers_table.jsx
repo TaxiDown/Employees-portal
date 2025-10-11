@@ -6,6 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from './ui/button';
 import Loading from './loading';
 import { useTranslations } from 'next-intl';
+import AddDrive from './add_drive';
+import Cookies from 'js-cookie';
 
 export default function DriversTable() {
   const dict = useTranslations("drivers");
@@ -22,6 +24,12 @@ export default function DriversTable() {
   const [startIndex, setStartIndex] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filtering, setFiltering] = useState({ 'ordering': '', 'status': '' });
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const value = Cookies.get('role');
+    setRole(value);
+  }, []);
 
   useEffect(() => {
     const url = new URLSearchParams(
@@ -94,6 +102,9 @@ export default function DriversTable() {
             />
             <Search size={18} className='absolute top-2 right-4 text-neutral-500' />
           </div>
+          {role === "Super fleet manager" &&
+            <AddDrive />
+          }
         </div>
 
         <Table>

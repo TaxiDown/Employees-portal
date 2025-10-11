@@ -4,12 +4,16 @@ import Navbar from '@/components/navbar';
 import { CirclePlus } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import { cookies } from 'next/headers'
 
 export default async function Home() {
   const dict = await getTranslations("lang");
+  const cookie = await cookies();
+  const role = cookie.get('role')?.value ?? null;
+
   return (
     <div className="">
-      <Navbar />
+      {(role === 'Fleet manager' || role === 'Super fleet manager') ?
       <div className='mt-20 flex flex-col'>
         <div className=" md:mr-25 md:ml-20 flex flex-col md:flex-row items-center md:justify-between md:gap-20 mb-2">
           <XmlFileUploadDialog />
@@ -20,6 +24,7 @@ export default async function Home() {
         </div>
         <BookingsTable />
       </div>
+      :<></>}
     </div>
   );
 }
