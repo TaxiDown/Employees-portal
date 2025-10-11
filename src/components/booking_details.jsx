@@ -234,19 +234,21 @@ export default function BookingDetails({ bookingID }) {
               ))}
             </div>
           </div>
+          {bookingDetails.extra_info &&
           <div className='flex flex-col gap-1'>
             <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("extraInfo")}</h2>
-            {bookingDetails.extra_info["Customer Name"] &&
+            {bookingDetails?.extra_info["Customer Name"] &&
               <div className='flex items-center gap-2 '>
                 {dict("name")}: {bookingDetails.extra_info["Customer Name"]}
               </div>
             }
-            {bookingDetails.extra_info["Order ID"] &&
+            {bookingDetails?.extra_info["Order ID"] &&
               <div className='flex items-center gap-2'>
                 {dict("orderId")}: {bookingDetails.extra_info["Order ID"]}
               </div>
             }
           </div>
+          }
         </div>
       </div>
 
