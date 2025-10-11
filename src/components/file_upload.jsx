@@ -144,6 +144,7 @@ export function XmlFileUploadDialog() {
         setUploadedFile(null)
         setError(null)
         setUploadSuccess(false)
+        window.location.reload()
         if (fileInputRef.current) {
           fileInputRef.current.value = ""
         }
