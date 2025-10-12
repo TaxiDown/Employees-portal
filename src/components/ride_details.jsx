@@ -203,7 +203,7 @@ export default function RideDetails({ ride, setShowRide }) {
                         {assignedDriver ? dict("change_driver") : dict("assign_driver")}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[500px]">
+                    <DialogContent className="sm:max-w-[500px] h-[75%] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>
                           {assignedDriver ? dict("change_driver") : dict("assign_driver")} #{ride.id}
@@ -211,7 +211,7 @@ export default function RideDetails({ ride, setShowRide }) {
                         <DialogDescription>{dict("select_driver")}</DialogDescription>
                       </DialogHeader>
 
-                      <div className="space-y-2 mt-4 flex flex-col items-center">
+                      <div className="space-y-2 mt-4  flex flex-col items-center">
                         <div className="relative w-max mb-5">
                           <input
                             className="w-75 max-w-[85vw] h-5 p-4 rounded-full border border-neutral-400 focus:border-neutral-600 outline-none"
