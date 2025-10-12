@@ -13,6 +13,7 @@ export default async function Home() {
 
   return (
     <div className="">
+      <Navbar role={role}/>
       {(role === 'Fleet manager' || role === 'Super fleet manager') ?
       <div className='mt-20 flex flex-col'>
         <div className=" md:mr-25 md:ml-20 flex flex-col md:flex-row items-center md:justify-between md:gap-20 mb-2">

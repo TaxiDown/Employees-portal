@@ -10,9 +10,6 @@ export async function POST(request) {
     const cookieHeader = `${access && `access=${access};`} refresh=${refresh}`;
     let cookieHeader2 = undefined;
 
-
-
-
     const formData = await request.formData()
     const file = formData.get("file")
 
@@ -20,12 +17,6 @@ export async function POST(request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 })
     }
 
-    // Validate file type
-    if (!file.name.toLowerCase().endsWith(".xml")) {
-      return NextResponse.json({ error: "Invalid file type. Only XML files are allowed" }, { status: 400 })
-    }
-
-    // Create new FormData to send to backend
     const backendFormData = new FormData()
     backendFormData.append("file", file)
 
@@ -57,22 +48,9 @@ export async function POST(request) {
             }
             return NextResponse.json({ message: jsonResponse },{status: response.status})
         }catch(err){
-                return NextResponse.json({ message: err }, { status: 500 })
+            return NextResponse.json({ message: err }, { status: 500 })
         }
     }else{
-        try{
-            const response = await fetch(`${process.env.API_URL}api/employees/bookings/import-xml/`,{
-                method: 'POST',
-                body: backendFormData,
-            });
-            const jsonResponse = await response.json();
-            if(response.status === 201 ){
-                const res = NextResponse.json({ message: jsonResponse},{status :  response.status });
-                return res
-            }
-            return NextResponse.json({ message: jsonResponse }, {status: response.status})
-        }catch(err){
-                return NextResponse.json({ message: err }, { status: 500 })
-        }
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 })
     }
 }

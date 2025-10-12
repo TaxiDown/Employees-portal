@@ -15,7 +15,7 @@ import { Upload, FileText, CheckCircle2, XCircle, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function XmlFileUploadDialog() {
-  const t = useTranslations("xmlUpload") // ✅ translation namespace
+  const t = useTranslations("xmlUpload")
   const [open, setOpen] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFile, setUploadedFile] = useState(null)
@@ -119,7 +119,7 @@ export function XmlFileUploadDialog() {
 
     try {
       const formData = new FormData()
-      const fileInput = fileInputRef.current
+      const fileInput = fileInputRef.current;
       if (fileInput && fileInput.files && fileInput.files[0]) {
         formData.append("file", fileInput.files[0])
       } else {
@@ -140,14 +140,15 @@ export function XmlFileUploadDialog() {
       setUploadSuccess(true)
 
       setTimeout(() => {
-        setOpen(false)
+        
+        window.location.reload();
+        /*setOpen(false)
         setUploadedFile(null)
         setError(null)
         setUploadSuccess(false)
-        window.location.reload()
         if (fileInputRef.current) {
           fileInputRef.current.value = ""
-        }
+        }*/
       }, 2000)
     } catch (err) {
       setError(err.message || "Failed to upload file. Please try again.")
