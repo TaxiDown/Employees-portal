@@ -1,6 +1,6 @@
 'use client'
 import { CirclePlus, Phone, Mail, MapPin, Clock, ChevronRight, ChevronLeft, Clock8, ArrowDownUp, SlidersHorizontal, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -12,20 +12,23 @@ import { DateRangeFilter } from './date_filter';
 import { useTranslations } from 'next-intl';
 
 export default function BookingsTable() {
+  const searchParams = useSearchParams();
+
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [count, setCount] = useState(0);
   const [numPages, setNumPages] = useState(0);
   const pageSize = 10;
   const router = useRouter();
   const [endIndex, setEndIndex] = useState(0);
-  const [startIndex, setStartIndex] = useState(1);
+  const [startIndex, setStartIndex] = useState(Number(searchParams.get("page")) || 1);
   const [searchQuery, setSearchQuery] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filtering, setFiltering] = useState({ 'ordering': '', 'status': '' });
+
 
   const dict = useTranslations("table");
   const statusDict = useTranslations("status");
@@ -111,6 +114,7 @@ export default function BookingsTable() {
 
   const nextPage = () => {
     if (page < numPages) {
+      router.push(`?page=${Math.min(page + 1, numPages)}`)
       setEndIndex(endIndex + 1);
       setStartIndex(startIndex + 1);
       setPage((prev) => Math.min(prev + 1, numPages))
@@ -119,6 +123,7 @@ export default function BookingsTable() {
 
   const prevPage = () => {
     if (page > 1) {
+      router.push(`?page=${Math.max(page - 1, 1)}`)
       setEndIndex(endIndex - 1);
       setStartIndex(startIndex - 1)
       setPage((prev) => Math.max(prev - 1, 1))
@@ -130,6 +135,8 @@ export default function BookingsTable() {
     if(num > startIndex) setStartIndex(num);
     //else if(num < endIndex) setEndIndex(num);
     setPage(num);
+    router.push(`?page=${num}`)
+
     const url = new URLSearchParams(
       Object.fromEntries(
         Object.entries(filtering).filter(([_, v]) => v)
@@ -332,7 +339,7 @@ export default function BookingsTable() {
                 </Button>
 
                 <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(3, numPages - startIndex +1 ) }, (_, i) => startIndex + i).map((pageNum) => (
+                  {Array.from({ length: Math.min(3, numPages - startIndex +1 ) }, (_, i) => page + i).map((pageNum) => (
                     <Button
                       key={pageNum}
                       variant={page === pageNum ? "default" : "outline"}

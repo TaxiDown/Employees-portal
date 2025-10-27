@@ -1,6 +1,6 @@
 'use client'
 import { CirclePlus, ChevronRight, ChevronLeft, Clock8, Search, Mail } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from './ui/button';
@@ -10,18 +10,20 @@ import AddDrive from './add_drive';
 import Cookies from 'js-cookie';
 
 export default function DriversTable() {
+  const searchParams = useSearchParams();
+
   const dict = useTranslations("drivers");
   const router = useRouter();
 
   const [drivers, setDrivers] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [count, setCount] = useState(0);
   const [numPages, setNumPages] = useState(0);
   const pageSize = 10;
   const [endIndex, setEndIndex] = useState(0);
-  const [startIndex, setStartIndex] = useState(1);
+  const [startIndex, setStartIndex] = useState(Number(searchParams.get("page")) || 1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filtering, setFiltering] = useState({ 'ordering': '', 'status': '' });
   const [role, setRole] = useState(null);
@@ -64,6 +66,7 @@ export default function DriversTable() {
 
   const nextPage = () => {
     if (page < numPages) {
+      router.push(`/drivers?page=${Math.min(page + 1, numPages)}`)
       setEndIndex(endIndex + 1);
       setStartIndex(startIndex + 1);
       setPage((prev) => Math.min(prev + 1, numPages))
@@ -72,6 +75,7 @@ export default function DriversTable() {
 
   const prevPage = () => {
     if (page > 1) {
+      router.push(`/drivers?page=${Math.min(page - 1, 1)}`)
       setEndIndex(endIndex - 1);
       setStartIndex(startIndex - 1)
       setPage((prev) => Math.max(prev - 1, 1))
@@ -82,6 +86,8 @@ export default function DriversTable() {
     if(num > startIndex) setStartIndex(num);
     //else if(num < endIndex) setEndIndex(num);
     setPage(num);
+    router.push(`/drivers?page=${num}`)
+
     const url = new URLSearchParams(
       Object.fromEntries(Object.entries(filtering).filter(([_, v]) => v))
     ).toString();
