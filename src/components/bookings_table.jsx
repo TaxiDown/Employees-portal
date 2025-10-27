@@ -67,6 +67,7 @@ export default function BookingsTable() {
       });
       if (response.status === 200) {
         const bookingsObject = await response.json();
+       // console.log(Math.ceil(bookingsObject.count / pageSize))
         setBookings(bookingsObject.results);
         setIsLoading(false);
         setCount(bookingsObject.count);
@@ -109,21 +110,53 @@ export default function BookingsTable() {
   }
 
   const nextPage = () => {
-    if (endIndex < numPages) {
+    if (page < numPages) {
       setEndIndex(endIndex + 1);
       setStartIndex(startIndex + 1);
-      if (page == startIndex) setPage((prev) => Math.min(prev + 1, numPages))
+      setPage((prev) => Math.min(prev + 1, numPages))
     }
   }
 
   const prevPage = () => {
-    if (startIndex > 1) {
+    if (page > 1) {
       setEndIndex(endIndex - 1);
       setStartIndex(startIndex - 1)
+      setPage((prev) => Math.max(prev - 1, 1))
+
     }
   }
 
-  const goToPage = (num) => setPage(num);
+  const goToPage = (num) => {
+    if(num > startIndex) setStartIndex(num);
+    //else if(num < endIndex) setEndIndex(num);
+    setPage(num);
+    const url = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(filtering).filter(([_, v]) => v)
+      )
+    ).toString();
+    const getBookings = async () => {
+      const response = await fetch(`/api/get_bookings?page_size=${pageSize}&page=${num}${url ? `&${url.toLowerCase()}` : ''}${searchQuery ? `&booking_number=${searchQuery}` : ''}${startDate? `&from_date=${startDate}` : ''}${endDate? `&to_date=${endDate}` : ''}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (response.status === 200) {
+        const bookingsObject = await response.json();
+       // console.log(Math.ceil(bookingsObject.count / pageSize))
+        setBookings(bookingsObject.results);
+        setIsLoading(false);
+        setCount(bookingsObject.count);
+        const max = Math.ceil(bookingsObject.count / pageSize);
+        setNumPages(max);
+      } else if (response.status === 401) {
+        router.push('/unauthorized');
+      } else {
+        setError();
+      }
+    }
+    getBookings();
+  }
 
   const getBookingDetails = (bookingNum) => router.push(`/booking_details/${bookingNum}`);
 
@@ -287,9 +320,10 @@ export default function BookingsTable() {
 
           {bookings.length > 0 && numPages > 1 && (
             <div className="flex items-center justify-between mt-6 pt-4 border-t">
-              <div className="text-sm text-muted-foreground">
+              {/*<div className="text-sm text-muted-foreground">
                 {dict("showing")} {startIndex} {dict("to")} {Math.min(numPages, endIndex)} {dict("of")} {numPages} {dict("entries")}
-              </div>
+              </div>*/}
+              <div></div>
 
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={prevPage} disabled={startIndex === 1} className="flex items-center gap-1 bg-transparent">
@@ -298,7 +332,7 @@ export default function BookingsTable() {
                 </Button>
 
                 <div className="flex items-center gap-1">
-                  {Array.from({ length: endIndex - startIndex + 1 }, (_, i) => startIndex + i).map((pageNum) => (
+                  {Array.from({ length: Math.min(3, numPages - startIndex +1 ) }, (_, i) => startIndex + i).map((pageNum) => (
                     <Button
                       key={pageNum}
                       variant={page === pageNum ? "default" : "outline"}
@@ -311,7 +345,7 @@ export default function BookingsTable() {
                   ))}
                 </div>
 
-                <Button variant="outline" size="sm" onClick={nextPage} disabled={endIndex === numPages} className="flex items-center gap-1 bg-transparent">
+                <Button variant="outline" size="sm" onClick={nextPage} disabled={page === numPages} className="flex items-center gap-1 bg-transparent">
                   {dict("next")}
                   <ChevronRight className="h-4 w-4" />
                 </Button>

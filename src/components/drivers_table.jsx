@@ -63,23 +63,52 @@ export default function DriversTable() {
   }, [page, filtering, searchQuery]);
 
   const nextPage = () => {
-    if (endIndex < numPages) {
+    if (page < numPages) {
       setEndIndex(endIndex + 1);
       setStartIndex(startIndex + 1);
-      if (page === startIndex) setPage((prev) => Math.min(prev + 1, numPages));
+      setPage((prev) => Math.min(prev + 1, numPages))
     }
-  };
+  }
 
   const prevPage = () => {
-    if (startIndex > 1) {
+    if (page > 1) {
       setEndIndex(endIndex - 1);
-      setStartIndex(startIndex - 1);
+      setStartIndex(startIndex - 1)
+      setPage((prev) => Math.max(prev - 1, 1))
     }
-  };
+  }
 
-  const goToPage = (num) => {
+  const goToPage = (num = page) => {
+    if(num > startIndex) setStartIndex(num);
+    //else if(num < endIndex) setEndIndex(num);
     setPage(num);
-  };
+    const url = new URLSearchParams(
+      Object.fromEntries(Object.entries(filtering).filter(([_, v]) => v))
+    ).toString();
+
+
+    const getdrivers = async () => {
+      const response = await fetch(`/api/get_drivers?page_size=${pageSize}&page=${num}${url ? `&${url.toLowerCase()}` : ''}${searchQuery ? `&driver_name=${searchQuery}` : ''}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (response.status === 200) {
+        const driversObject = await response.json();
+       // console.log(Math.ceil(bookingsObject.count / pageSize))
+        setDrivers(driversObject.results);
+        setIsLoading(false);
+        setCount(driversObject.count);
+        const max = Math.ceil(driversObject.count / pageSize);
+        setNumPages(max);
+      } else if (response.status === 401) {
+        router.push('/unauthorized');
+      } else {
+        setError();
+      }
+    }
+    getdrivers();
+  }
 
   const getdriverDetails = (driverNum) => {
     router.push(`/drivers/${driverNum}`);
@@ -159,10 +188,10 @@ export default function DriversTable() {
 
         {drivers.length > 0 && numPages > 1 && (
           <div className="flex items-center justify-between mt-6 pt-4 border-t">
-            <div className="text-sm text-muted-foreground">
+            {/*<div className="text-sm text-muted-foreground">
               {dict("showing", { start: startIndex, end: Math.min(numPages, endIndex), total: numPages })}
-            </div>
-
+            </div>*/}
+            <div></div>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -176,7 +205,7 @@ export default function DriversTable() {
               </Button>
 
               <div className="flex items-center gap-1">
-                {Array.from({ length: endIndex - startIndex + 1 }, (_, i) => startIndex + i).map((pageNum) => (
+                {Array.from({ length: Math.min(3, numPages - startIndex +1 )}, (_, i) => startIndex + i).map((pageNum) => (
                   <Button
                     key={pageNum}
                     variant={page === pageNum ? "default" : "outline"}
@@ -193,7 +222,7 @@ export default function DriversTable() {
                 variant="outline"
                 size="sm"
                 onClick={nextPage}
-                disabled={endIndex === numPages}
+                disabled={page === numPages}
                 className="flex items-center gap-1 bg-transparent"
               >
                 {dict("next")}
