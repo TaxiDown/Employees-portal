@@ -24,6 +24,7 @@ export async function POST() {
       cookieStore.delete('refresh');
       cookieStore.delete('csrftoken');
       cookieStore.delete('sessionid');
+      cookieStore.delete('role');
 
       return NextResponse.json({ message: 'Logged out successfully' }, { status: 200 });
     } else {

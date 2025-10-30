@@ -120,10 +120,12 @@ export default function BookingDetails({ bookingID }) {
       <h1 className='font-medium text-2xl my-3'>
         {dict("booking")} #{bookingDetails.booking_number}
       </h1>
+      
+      {bookingDetails.booking_number_ex &&
       <h2 className='font-medium text-xl my-3 text-neutral-700'>
         {dict("exbooking")} #{bookingDetails.booking_number_ex}
       </h2>
-
+      }
       <div className='flex flex-col lg:flex-row gap-5 justify-between'>
         <div className='flex flex-col gap-3 w-[80%]'>
           <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("tripDetails")}</h2>
@@ -259,6 +261,15 @@ export default function BookingDetails({ bookingID }) {
               {dict("service")}
               <Badge variant="outline" className='text-orange-700'>{bookingDetails.services.service}</Badge>
             </h3>
+            <div>
+              {Object.entries(bookingDetails.services).map(([key, value])=>(
+                key !== "service" &&
+                <div key={key} className="mb-2 text-sm font-medium">
+                  {key}: {value}
+                </div>
+              ))
+              }
+            </div>
           </div>
         </div>
       }

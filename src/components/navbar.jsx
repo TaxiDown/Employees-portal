@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Menu, X } from "lucide-react"
 import LanguageSwitcher from './switcher';
 import {useTranslations} from 'next-intl';
+import { useRouter } from 'next/navigation';
 
 
 export default function Navbar({role}) {
@@ -11,6 +12,7 @@ export default function Navbar({role}) {
   const [loggedIn, setLoggedIn] = useState(false);
   const [loggedOut, setLogedOut] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const router = useRouter()
   const name = process.env.NEXT_PUBLIC_NAME
 
   useEffect(() => {
@@ -27,6 +29,7 @@ export default function Navbar({role}) {
           setLoggedIn(true);
         } else {
           setLoggedIn(false);
+          router.push("/unauthorized")
         }
       } catch (err) {
         setLoggedIn(false);
@@ -34,7 +37,7 @@ export default function Navbar({role}) {
     };
   
     fetchData();
-  }, []);
+  });
 
   const logout = async () =>{
     try{
@@ -53,7 +56,9 @@ export default function Navbar({role}) {
     }catch(err){
     }
   }
-  
+  if(!loggedIn){
+    return
+  }
   return (
     <>{
       loggedOut && 
@@ -68,19 +73,22 @@ export default function Navbar({role}) {
           <h3 className='text-[18px] md:text-[20px] font-bold'>{name}</h3>
         </Link>  
         <div className="hidden sm:flex items-center gap-2 md:gap-5 lg:gap-10">
+          
+          {(role === 'Fleet manager' || role === 'Super fleet manager') ?
+          <>
           <Link
             href={`/`}
             className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
           >
             {dict("bookings")}
           </Link>
-          {(role === 'Fleet manager' || role === 'Super fleet manager') ?
           <Link
             href={`/drivers`}
             className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
           >
             {dict("drivers")}
           </Link>
+          </>
           :<></>}
           {loggedIn ? (
             <>
@@ -109,7 +117,9 @@ export default function Navbar({role}) {
 
       {isMobileMenuOpen && (
         <div className="sm:hidden fixed top-14 left-0 w-full bg-white backdrop-blur-md shadow-lg z-30">
-          <div className="flex flex-col py-4 px-6 space-y-4">
+          <div className="flex flex-col py-4 px-6 space-y-4"> 
+            {(role === 'Fleet manager' || role === 'Super fleet manager') ?
+            <>
             <Link
               href={`/`}
               className="text-yellow-1000 text-base font-medium hover:text-yellow-600 transition-colors duration-200 py-2"
@@ -117,13 +127,13 @@ export default function Navbar({role}) {
             >
               {dict("bookings")}
             </Link>
-            {(role === 'Fleet manager' || role === 'Super fleet manager') ?
             <Link
               href={`/drivers`}
               className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
             >
               {dict("drivers")}
             </Link>
+            </>
             :<></>}
             {loggedIn ? (
               <>
