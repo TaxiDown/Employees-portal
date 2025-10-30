@@ -63,7 +63,7 @@ export default function BookingsTable() {
       )
     ).toString();
     const getBookings = async () => {
-      const response = await fetch(`/api/get_bookings?page_size=${pageSize}&page=${page}${url ? `&${url.toLowerCase()}` : ''}${searchQuery ? `&booking_number=${searchQuery}` : ''}${startDate? `&from_date=${startDate}` : ''}${endDate? `&to_date=${endDate}` : ''}`, {
+      const response = await fetch(`/api/get_bookings?page_size=${pageSize}&page=${page}${url ? `&${url.toLowerCase()}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}${startDate? `&from_date=${startDate}` : ''}${endDate? `&to_date=${endDate}` : ''}`, {
         method: 'GET',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
