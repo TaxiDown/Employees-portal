@@ -209,7 +209,9 @@
     "of": "of",
     "entries": "entries",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "drivers": "Drivers",
+    "unassigned":"Unassigned"
   },
   "dateFilter": {
     "next90": "Next 90 days",

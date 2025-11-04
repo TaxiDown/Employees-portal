@@ -42,17 +42,19 @@ export default function BookingsTable() {
   ]
 
   const getColor = (status) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return "border-2 border-orange-400 bg-orange-400  py-1 px-4 rounded-full"
-      case "confirmed":
-        return "border-2 border-green-500 text-green-500 bg-white py-1 px-3 rounded-full"
-      case "completed":
-        return "border-2 border-green-500 bg-green-500 text-white py-1 px-3 rounded-full"
-      case "canceled":
-        return "border-2 border-red-400 bg-red-400  py-1 px-4 rounded-full"
-      default:
-        return ""
+    if(status){
+      switch (status.toLowerCase()) {
+        case "pending":
+          return "border-2 border-orange-400 bg-orange-400  py-1 px-4 rounded-full"
+        case "confirmed":
+          return "border-2 border-green-500 text-green-500 bg-white py-1 px-3 rounded-full"
+        case "completed":
+          return "border-2 border-green-500 bg-green-500 text-white py-1 px-3 rounded-full"
+        case "canceled":
+          return "border-2 border-red-400 bg-red-400  py-1 px-4 rounded-full"
+        default:
+          return ""
+      }
     }
   }
 
@@ -72,6 +74,7 @@ export default function BookingsTable() {
         const bookingsObject = await response.json();
        // console.log(Math.ceil(bookingsObject.count / pageSize))
         setBookings(bookingsObject.results);
+        console.log(bookingsObject.results);
         setIsLoading(false);
         setCount(bookingsObject.count);
         const max = Math.ceil(bookingsObject.count / pageSize);
@@ -93,13 +96,14 @@ export default function BookingsTable() {
   }
 
   const getStatusVariant = (status) => {
-    switch (status.toLowerCase()) {
-      case "pending": return "secondary"
-      case "confirmed": return "default"
-      case "completed": return "outline"
-      case "cancelled": return "destructive"
-      default: return "secondary"
-    }
+    if(status){
+      switch (status.toLowerCase()) {
+        case "pending": return "secondary"
+        case "confirmed": return "default"
+        case "completed": return "outline"
+        case "cancelled": return "destructive"
+        default: return "secondary"
+      }}
   }
 
   const formatDateTime = (dateTime) => {
@@ -232,9 +236,10 @@ export default function BookingsTable() {
                   <TableHead className="font-semibold">{dict("type")}</TableHead>
                   <TableHead className="font-semibold">{dict("status")}</TableHead>
                   <TableHead className="font-semibold">{dict("vehicleCategory")}</TableHead>
-                  <TableHead className="font-semibold">{dict("pickupDetails")}</TableHead>
                   <TableHead className="font-semibold flex items-center hover:text-orange-500 cursor-pointer" onClick={sortDate}>
-                    <ArrowDownUp className="h-4 w-4 mr-2" /> {dict("date")}
+                  <ArrowDownUp className="h-4 w-4 mr-2" /> {dict("pickupDetails")}</TableHead>
+                  <TableHead className="font-semibold pl-5" onClick={sortDate}>
+                    {dict("drivers")}
                   </TableHead>
                   <TableHead className="font-semibold">{dict("contactInfo")}</TableHead>
                   <TableHead className="font-semibold">{dict("passengers")}</TableHead>
@@ -252,7 +257,7 @@ export default function BookingsTable() {
 
                     <TableCell>
                       <Badge variant={getStatusVariant(booking.status)} className={getColor(booking.status)}>
-                        {statusDict(booking.status.toLowerCase()) || booking.status}
+                        {booking.status ? (statusDict(booking.status.toLowerCase()) || booking.status) : "Undefined"}
                       </Badge>
                     </TableCell>
 
@@ -278,11 +283,20 @@ export default function BookingsTable() {
                       </div>
                     </TableCell>
 
-                    <TableCell>
+                    {/*<TableCell>
                       <div className="flex items-center gap-2">
                         <Clock8 className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm font-mono">{booking.datetime_pickup.split("T")[0]}</span>
                       </div>
+                    </TableCell>*/}
+                    <TableCell className="space-y-1">
+                      {booking.drivers.length >0 ?
+                      <>
+                        {booking?.drivers?.map((driver, key)=>(
+                          <div key={key}>→ {driver}</div>
+                        ))}
+                      </>
+                      :<div className='text-center'>{dict("unassigned")}</div>}
                     </TableCell>
 
                     <TableCell className="space-y-1">

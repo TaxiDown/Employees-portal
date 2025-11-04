@@ -209,7 +209,9 @@
     "of": "de",
     "entries": "entradas",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "drivers": "Conductores",
+    "unassigned":"Sin asignar"
   },
   "dateFilter": {
     "next90": "Próximos 90 días",
