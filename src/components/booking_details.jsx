@@ -11,7 +11,7 @@ import Loading from './loading';
 import Link from 'next/link';
 import { MessageCircleMore } from 'lucide-react';
 
-export default function BookingDetails({ bookingID }) {
+export default function BookingDetails({ bookingID, role }) {
   const router = useRouter();
   const [rides, setRides] = useState([]);
   const [bookingDetails, setBookingDetails] = useState([]);
@@ -48,6 +48,7 @@ export default function BookingDetails({ bookingID }) {
       if (response.status === 200) {
         const detailsObject = await response.json();
         setBookingDetails(detailsObject);
+        console.log(detailsObject);
       } else if (response.status === 401)
         router.push('/unauthorized');
       else if (response.status === 404)
@@ -115,7 +116,7 @@ export default function BookingDetails({ bookingID }) {
   return (
     <div className='w-full min-h-screen h-max px-12 mt-30 mb-10 lg:w-[70%]'>
       {showRide &&
-        <RideDetails ride={showRide} setShowRide={setShowRide} />
+        <RideDetails role={role} ride={showRide} setShowRide={setShowRide} />
       }
       <h1 className='font-medium text-2xl my-3'>
         {dict("booking")} #{bookingDetails.booking_number}
@@ -239,14 +240,14 @@ export default function BookingDetails({ bookingID }) {
           {bookingDetails.extra_info &&
           <div className='flex flex-col gap-1'>
             <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("extraInfo")}</h2>
-            {bookingDetails?.extra_info["Customer Name"] &&
+            {bookingDetails?.extra_info["CustomerName"] &&
               <div className='flex items-center gap-2 '>
-                {dict("name")}: {bookingDetails.extra_info["Customer Name"]}
+                {dict("name")}: {bookingDetails.extra_info["CustomerName"]}
               </div>
             }
-            {bookingDetails?.extra_info["Order ID"] &&
+            {bookingDetails?.extra_info["OrderID"] &&
               <div className='flex items-center gap-2'>
-                {dict("orderId")}: {bookingDetails.extra_info["Order ID"]}
+                {dict("orderId")}: {bookingDetails.extra_info["OrderID"]}
               </div>
             }
           </div>

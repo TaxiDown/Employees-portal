@@ -1,7 +1,7 @@
 'use client'
 import { CirclePlus, Phone, Mail, MapPin, Clock, ChevronRight, ChevronLeft, Clock8, ArrowDownUp, SlidersHorizontal, Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
@@ -11,8 +11,10 @@ import Loading from './loading';
 import { DateRangeFilter } from './date_filter';
 import { useTranslations } from 'next-intl';
 
-export default function BookingsTable() {
+export default function BookingsTable({role}) {
   const searchParams = useSearchParams();
+  const observerTarget = useRef(null);
+  const [isLoadingItems, setIsLoadingItems] = useState(false);
 
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState("");
@@ -23,13 +25,41 @@ export default function BookingsTable() {
   const pageSize = 10;
   const router = useRouter();
   const [endIndex, setEndIndex] = useState(0);
-  const [startIndex, setStartIndex] = useState(Number(searchParams.get("page")) || 1);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [filtering, setFiltering] = useState({ 'ordering': '', 'status': '' });
-
-
+  const [startIndex, setStartIndex] = useState(
+    Number(searchParams.get("page")) || 1
+  );
+  
+  const [searchQuery, setSearchQuery] = useState(() => {
+    if (typeof window !== "undefined") {
+      return sessionStorage.getItem("searchQuery") || "";
+    }
+    return "";
+  });
+  
+  const [startDate, setStartDate] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("startDate");
+      return stored ? new Date(stored) : null;   // ✅ convert to Date
+    }
+    return null;
+  });
+  
+  const [endDate, setEndDate] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("endDate");
+      return stored ? new Date(stored) : null;   // ✅ convert to Date
+    }
+    return null;
+  });
+  
+  const [filtering, setFiltering] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = sessionStorage.getItem("filtering");
+      return stored ? JSON.parse(stored) : { ordering: "", status: "" };
+    }
+    return { ordering: "", status: "" };
+  });
+  
   const dict = useTranslations("table");
   const statusDict = useTranslations("status");
 
@@ -58,7 +88,71 @@ export default function BookingsTable() {
     }
   }
 
+
   useEffect(() => {
+    const savedSearch = sessionStorage.getItem("searchQuery");
+    const savedStart = sessionStorage.getItem("startDate");
+    const savedEnd = sessionStorage.getItem("endDate");
+    const savedFilters = sessionStorage.getItem("filtering");
+  
+    if (savedSearch) setSearchQuery(savedSearch);
+    if (savedStart) setStartDate(savedStart);
+    if (savedEnd) setEndDate(savedEnd);
+    if (savedFilters) setFiltering(JSON.parse(savedFilters));
+  }, []);
+  
+  
+  useEffect(() => {
+    sessionStorage.setItem("searchQuery", searchQuery);
+  }, [searchQuery]);
+  
+  useEffect(() => {
+    sessionStorage.setItem("startDate", startDate ?? "");
+    sessionStorage.setItem("endDate", endDate ?? "");
+  }, [startDate, endDate]);
+  
+  useEffect(() => {
+    sessionStorage.setItem("filtering", JSON.stringify(filtering));
+  }, [filtering]);
+  
+
+
+  useEffect(() => {
+    const url = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(filtering).filter(([_, v]) => v)
+      )
+    ).toString();
+    setPage(1);
+    const getBookings = async () => {
+      const response = await fetch(`/api/get_bookings?page_size=${pageSize}&${url ? `&${url.toLowerCase()}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}${startDate? `&from_date=${startDate}` : ''}${endDate? `&to_date=${endDate}` : ''}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (response.status === 200) {
+        const bookingsObject = await response.json();
+        console.log(`page = ${page}`)
+        console.log(bookingsObject.results)
+       // console.log(Math.ceil(bookingsObject.count / pageSize))
+        setBookings(bookingsObject.results);      
+        setIsLoading(false);
+        setCount(bookingsObject.count);
+        const max = Math.ceil(bookingsObject.count / pageSize);
+        setNumPages(max);
+        setEndIndex(Math.min(3, max))
+      } else if (response.status === 401) {
+        router.push('/unauthorized');
+      } else {
+        setError();
+      }
+      setIsLoadingItems(false);
+    }
+    getBookings();
+  }, [filtering, searchQuery, startDate, endDate]);
+
+  useEffect(() => {
+    if (page === 1) return;
     const url = new URLSearchParams(
       Object.fromEntries(
         Object.entries(filtering).filter(([_, v]) => v)
@@ -72,9 +166,13 @@ export default function BookingsTable() {
       });
       if (response.status === 200) {
         const bookingsObject = await response.json();
+        console.log(`page = ${page}`)
+        console.log(bookingsObject.results)
        // console.log(Math.ceil(bookingsObject.count / pageSize))
-        setBookings(bookingsObject.results);
-        console.log(bookingsObject.results);
+        setBookings(prev => [
+          ...prev,
+          ...bookingsObject.results
+        ]);      
         setIsLoading(false);
         setCount(bookingsObject.count);
         const max = Math.ceil(bookingsObject.count / pageSize);
@@ -85,9 +183,10 @@ export default function BookingsTable() {
       } else {
         setError();
       }
+      setIsLoadingItems(false);
     }
     getBookings();
-  }, [page, filtering, searchQuery, startDate, endDate])
+  }, [page]);
 
   const getBookingType = (booking) => {
     return !booking.dropoff_location
@@ -113,7 +212,7 @@ export default function BookingsTable() {
   }
 
   const formatLocation = (location) => {
-    return location.length > 40 ? `${location.substring(0, 40)}...` : location
+    return location?.length > 40 ? `${location?.substring(0, 40)}...` : location
   }
 
   const nextPage = () => {
@@ -191,6 +290,28 @@ export default function BookingsTable() {
     }
   }
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingItems) {
+          setIsLoadingItems(true);
+          loadMoreItems();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  });
+
+  const loadMoreItems = () => {
+    if(page < numPages) setPage(page+1);
+  };
+
   if (isLoading) return <Loading />
 
   return (
@@ -223,7 +344,9 @@ export default function BookingsTable() {
           <Search className='absolute top-2 right-12 text-neutral-500' />
         </div>
 
-        <DateRangeFilter setStart={setStartDate} setEnd={setEndDate} />
+        {role === "Super fleet manager" &&
+          <DateRangeFilter setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
+        }
       </div>
 
       <div className="w-full">
@@ -247,8 +370,8 @@ export default function BookingsTable() {
               </TableHeader>
 
               <TableBody>
-                {bookings.map((booking) => (
-                  <TableRow key={booking.id} className="hover:bg-muted/50">
+                {bookings.map((booking, index) => (
+                  <TableRow key={index} id={booking.id} className="hover:bg-muted/50">
                     <TableCell onClick={() => getBookingDetails(booking.id)} className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700">{booking.booking_number}</TableCell>
 
                     <TableCell>
@@ -290,7 +413,7 @@ export default function BookingsTable() {
                       </div>
                     </TableCell>*/}
                     <TableCell className="space-y-1">
-                      {booking.drivers.length >0 ?
+                      {booking?.drivers?.length >0 ?
                       <>
                         {booking?.drivers?.map((driver, key)=>(
                           <div key={key}>→ {driver}</div>
@@ -319,8 +442,8 @@ export default function BookingsTable() {
 
                     <TableCell className="text-center">
                       <div className="text-sm">
-                        <div className="font-medium">{booking.num_adult_seats} {dict("adults")}</div>
-                        {booking.extra_child_seats.length > 0 && (
+                        <div className="font-medium">{booking?.num_adult_seats} {dict("adults")}</div>
+                        {booking?.extra_child_seats?.length > 0 && (
                           <div className="text-xs text-muted-foreground">
                             +{booking.extra_child_seats.reduce((sum, seat) => sum + seat.num_seats, 0)} {dict("childSeats")}
                           </div>
@@ -339,38 +462,9 @@ export default function BookingsTable() {
             </div>
           )}
 
-          {bookings.length > 0 && numPages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t">
-              {/*<div className="text-sm text-muted-foreground">
-                {dict("showing")} {startIndex} {dict("to")} {Math.min(numPages, endIndex)} {dict("of")} {numPages} {dict("entries")}
-              </div>*/}
-              <div></div>
-
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={prevPage} disabled={startIndex === 1} className="flex items-center gap-1 bg-transparent">
-                  <ChevronLeft className="h-4 w-4" />
-                  {dict("previous")}
-                </Button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(3, numPages - startIndex +1 ) }, (_, i) => page + i).map((pageNum) => (
-                    <Button
-                      key={pageNum}
-                      variant={page === pageNum ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => goToPage(pageNum)}
-                      className="min-w-[2.5rem]"
-                    >
-                      {pageNum}
-                    </Button>
-                  ))}
-                </div>
-
-                <Button variant="outline" size="sm" onClick={nextPage} disabled={page === numPages} className="flex items-center gap-1 bg-transparent">
-                  {dict("next")}
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+          {bookings.length > 0 && page < numPages && (
+            <div ref={observerTarget} className="py-8 text-center">
+              {isLoadingItems && <p>Loading more...</p>}
             </div>
           )}
         </div>

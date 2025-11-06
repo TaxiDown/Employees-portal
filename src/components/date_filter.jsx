@@ -9,13 +9,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
-export function DateRangeFilter({ setStart, setEnd }) {
+export function DateRangeFilter({ setStart, setEnd, start, end }) {
   const dict = useTranslations("dateFilter")
 
   const presets = [
     { label: dict("next90"), getValue: () => {
-        const end = new Date()
-        const start = new Date()
+        const end =  new Date()
+        const start =  new Date()
         end.setDate(start.getDate() + 90)
         return { start, end }
     }},
@@ -52,8 +52,8 @@ export function DateRangeFilter({ setStart, setEnd }) {
     }},
   ]
 
-  const [startDate, setStartDate] = useState(undefined)
-  const [endDate, setEndDate] = useState(undefined)
+  const [startDate, setStartDate] = useState(start || undefined)
+  const [endDate, setEndDate] = useState(end || undefined)
   const [tempStartDate, setTempStartDate] = useState(undefined)
   const [tempEndDate, setTempEndDate] = useState(undefined)
   const [isOpen, setIsOpen] = useState(false)

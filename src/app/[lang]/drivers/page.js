@@ -9,7 +9,7 @@ export default async function Drivers() {
   return (
     <div className='flex justify-center'>
         <Navbar role={role}/>
-        <DriversTable />
+        <DriversTable role={role}/>
     </div>
   )
 }

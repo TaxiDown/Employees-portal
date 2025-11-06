@@ -10,7 +10,7 @@ export default async function Booking({params}) {
   return (
     <div className='flex justify-center'>
         <Navbar role={role}/>
-        <BookingDetails bookingID={ID}/>
+        <BookingDetails bookingID={ID} role={role}/>
     </div>
   )
 }

@@ -291,7 +291,11 @@
     "search_driver": "Buscar por nombre del conductor",
     "return_ride": "Viaje de regreso",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "change_payment": "Marcar como pagado",
+    "mark_unpaid": "Marcar como no pagado",
+    "add_note": "agregar nota",
+    "display_price": "Mostrar precio"
   },
   "xmlUpload": {
     "title": "Subir archivo XML",

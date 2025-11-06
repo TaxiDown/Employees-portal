@@ -1,14 +1,17 @@
 "use client"
 import { X, ClockIcon, DollarSignIcon, UserIcon, Search } from "lucide-react"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useTranslations } from "next-intl"
+import { MessageCircleMore } from "lucide-react"
+import { Textarea } from "./ui/textarea"
+import { EuroIcon } from "lucide-react"
 
-export default function RideDetails({ ride, setShowRide }) {
+export default function RideDetails({ ride, setShowRide, role }) {
   const router = useRouter()
   const dict = useTranslations("ride");
   const statusDict = useTranslations("status");
@@ -46,7 +49,8 @@ export default function RideDetails({ ride, setShowRide }) {
     })
     if (response.status === 200) {
       setCurrentStatus(newStatus)
-      setReload(true)
+      setReload(true);
+      window.location.reload();
     }
   }
 
@@ -61,10 +65,45 @@ export default function RideDetails({ ride, setShowRide }) {
       setAssignedDriver(driverId)
       setIsDialogOpen(false)
       setReload(true)
+      window.location.reload();
+    }
+  }
+
+  const [isChangePrice, setIsChangePrice] = useState(false);
+  const [newPrice, setNewPrice] = useState("");
+
+  const changeDisplayPrice = async() =>{
+    const response = await fetch(`/api/get_booking_details/${ride.id_booking}/get_rides/${ride.id}/change_display_price`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ display_price: newPrice }),
+    })
+    if (response.status === 200) {
+      setIsDialogOpen(false)
+      setReload(true);
+      window.location.reload();
+    }else{
+      
+    }
+  }
+
+  const changePayment = async (status) => {
+    const response = await fetch(`/api/get_booking_details/${ride.id_booking}/get_rides/${ride.id}/change_payment_status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ flg_paid: status }),
+    })
+    if (response.status === 200) {
+      setIsDialogOpen(false)
+      setReload(true);
+      window.location.reload();
     }
   }
 
   const getAssignedDriverDetails = () => {
+    console.log(ride)
     if (!assignedDriver) return null
     return drivers.find((driver) => driver.id == assignedDriver)
   }
@@ -107,9 +146,25 @@ export default function RideDetails({ ride, setShowRide }) {
     getdrivers()
   }, [searchQuery])
 
+  const [comment, setComment] = useState("")
+  const textareaRef = useRef(null);
+
+  const handleChange = (e) => {
+    setComment(e.target.value);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"; // expand
+    }
+  };
+
+  const handleAddNote = ()=>{
+    
+  }
+
   return (
     <div className="fixed top-0 left-0 z-50 w-screen h-screen bg-black/20 backdrop-blur-xs flex items-center justify-center">
-      <div className="w-[80%] lg:w-[50%] h-160 md:h-150 bg-white rounded-xl relative px-10 py-10 md:p-20 overflow-y-auto">
+      <div className="w-[80%] lg:w-[50%] h-160 md:h-150 bg-white rounded-xl relative px-10 pt-10 md:p-20 md:pb-10 overflow-y-auto">
         <X
           size={27}
           className="absolute top-7 right-7 cursor-pointer"
@@ -150,13 +205,37 @@ export default function RideDetails({ ride, setShowRide }) {
 
         <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
           <div className="space-y-4">
+            {role === "Super fleet manager" &&
             <div>
               <p className="text-sm text-gray-500 mb-1">{dict("price")}</p>
               <div className="flex items-center gap-2">
-                <DollarSignIcon className="h-4 w-4 text-gray-400" />
-                <span className="text-base font-semibold text-gray-900">${ride.price}</span>
+                <EuroIcon className="h-4 w-4 text-gray-400" />
+                <span className="text-base font-semibold text-gray-900">{ ride.price}</span>
               </div>
             </div>
+            }
+            {!isChangePrice?
+            <div>
+              <p className="text-sm text-gray-500 mb-1">{role === "Super fleet manager" ? dict("display_price") : dict("price")}</p>
+              <div className="flex justify-between mr-4">
+                <div className="flex items-center gap-2">
+                  <EuroIcon className="h-4 w-4 text-gray-400" />
+                  <span className="text-base font-semibold text-gray-900">{ride.display_price}</span>
+                </div>
+                <button onClick={()=>setIsChangePrice(true)} className="py-1 px-3 text-white text-sm bg-stone-600 hover:bg-black rounded-md cursor-pointer">Change</button>
+              </div>
+            </div>
+            :
+            <div>
+              <p className="text-sm text-gray-500 mb-1">{role === "Super fleet manager" ? dict("display_price") : dict("price")}</p>
+              <div className="flex justify-between mr-4 mt-3">
+                <div className="flex items-center gap-2">
+                  <input type="number" className="p-1 border border-gray-200 focus:border-gray-500 hover:border-gray-500 focus:border-gray-500 rounded-md" id="newPrice" name="newPrice" value={newPrice} onChange={(e) => setNewPrice(e.target.value)}/>
+                </div>
+                <button onClick={changeDisplayPrice} className={`py-1 px-3 text-white text-sm rounded-md cursor-pointer ${newPrice ? "bg-stone-800 hover:bg-black": "bg-stone-500"}`}>Save</button>
+              </div>
+            </div>
+            }
 
             {ride.duration !== "00:00:00" && (
               <div>
@@ -168,16 +247,12 @@ export default function RideDetails({ ride, setShowRide }) {
               </div>
             )}
 
-            <div>
-              <p className="text-sm text-gray-500 mb-1">{dict("payment_status")}</p>
-              <Badge
-                className={`px-3 py-1 rounded-full font-medium ${
-                  ride.flg_paid ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                }`}
-              >
-                {ride.flg_paid ? dict("paid") : dict("unpaid")}
-              </Badge>
-            </div>
+            {ride.duration === "00:00:00" && (
+              <div>
+                <p className="text-sm text-gray-500 mb-1">{dict("return_ride")}</p>
+                <span className="text-base text-gray-900">{ride.return_ride ? dict("yes") : dict("no")}</span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
@@ -196,6 +271,7 @@ export default function RideDetails({ ride, setShowRide }) {
                     )}
                   </div>
                 </div>
+
                 {ride.status !== "Canceled" && ride.status !== "Completed" && (
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
@@ -225,9 +301,8 @@ export default function RideDetails({ ride, setShowRide }) {
                           <button
                             key={driver.id}
                             onClick={() => handleDriverAssignment(driver.id)}
-                            className={`w-full p-4 border rounded-lg text-left transition-colors hover:bg-gray-50 ${
-                              assignedDriver === driver.id ? "border-blue-500 bg-blue-50" : "border-gray-200"
-                            }`}
+                            className={`w-full p-4 border rounded-lg text-left transition-colors hover:bg-gray-50 ${assignedDriver === driver.id ? "border-blue-500 bg-blue-50" : "border-gray-200"
+                              }`}
                           >
                             <div className="flex items-center justify-between">
                               <p className="font-medium text-gray-900">
@@ -242,16 +317,80 @@ export default function RideDetails({ ride, setShowRide }) {
                 )}
               </div>
             </div>
+            <div >
+              <p className="text-sm text-gray-500 mb-1">{dict("payment_status")}</p>
+              <div className="flex items-center justify-between">
+                <Badge
+                  className={`px-3 py-1 rounded-full font-medium ${ride.flg_paid ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                    }`}
+                >
+                  {ride.flg_paid ? dict("paid") : dict("unpaid")}
+                </Badge>
 
-            {ride.duration === "00:00:00" && (
-              <div>
-                <p className="text-sm text-gray-500 mb-1">{dict("return_ride")}</p>
-                <span className="text-base text-gray-900">{ride.return_ride ? dict("yes") : dict("no")}</span>
+                {!ride.flg_paid && (
+                  <Button variant="outline" size="sm" className="bg-transparent text-xs" onClick={() => { changePayment(true) }}>
+                    {dict("change_payment")}
+                  </Button>
+                )}
+                {ride.flg_paid && (
+                  <Button variant="outline" size="sm" className="bg-transparent text-xs" onClick={() => { changePayment(false) }}>
+                    {dict("mark_unpaid")}
+                  </Button>
+                )}
               </div>
-            )}
+            </div>
+
+
+          </div>
+        </div>
+        
+
+      <div className="flex flex-col justify-between  w-full mt-5 mb-1 py-5 border-t border-gray-200">
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <MessageCircleMore className="h-5 w-5" />
+          <h2 className="text-lg font-semibold">Notes</h2>
+          
+        </div>
+
+        <div className="space-y-3">
+          {ride.employees_notes.map((note) => (
+            <div key={note.id} className="bg-gray-100 rounded-lg p-4 border border-gray-200">
+              <h3 className="font-semibold text-gray-900 mb-1">
+                {note.employee.first_name} {note.employee.last_name}
+              </h3>
+              <p className="text-gray-700 text-sm">{note.note}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-gray-900">Add Note</h3>
+        <div className="space-y-3">
+          <Textarea
+            id="comment"
+            className="border border-gray-200 rounded-lg p-3 w-full resize-none min-h-24"
+            value={comment}
+            ref={textareaRef}
+            onChange={handleChange}
+            placeholder={dict("add_note")}
+            required
+            rows={3}
+          />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleAddNote}
+              className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg py-2"
+            >
+              Add Note
+            </Button>
+            
           </div>
         </div>
       </div>
+    </div>
+    </div>
     </div>
   )
 }

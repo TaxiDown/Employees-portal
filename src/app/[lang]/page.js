@@ -23,7 +23,7 @@ export default async function Home() {
           {dict("create")}
           </Link>
         </div>
-        <BookingsTable />
+        <BookingsTable role={role}/>
       </div>
       :<></>}
     </div>

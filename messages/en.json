@@ -291,7 +291,11 @@
     "search_driver": "Search with driver name",
     "return_ride": "Return Ride",
     "yes": "Yes",
-    "no": "No"
+    "no": "No", 
+    "change_payment": "Mark as paid",
+    "mark_unpaid": "Mark as unpaid",
+    "add_note": "Add note",
+    "display_price" : "Display price"
   },
   "xmlUpload": {
     "title": "Upload XML File",
