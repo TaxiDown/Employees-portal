@@ -25,7 +25,7 @@ export async function POST(request, {params}){
     }
     if(access){
         try{
-            const response = await fetch(`${process.env.API_URL}api/employees/bookings/${bookingID}/rides/${rideID}/add-note/`, {
+            const response = await fetch(`${process.env.API_URL}api/employees/bookings/${bookingID}/rides/${rideID}/notes/`, {
                 method: 'POST',
                 body: JSON.stringify(body),
                 headers: {

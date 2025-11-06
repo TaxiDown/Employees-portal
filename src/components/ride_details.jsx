@@ -158,8 +158,18 @@ export default function RideDetails({ ride, setShowRide, role }) {
     }
   };
 
-  const handleAddNote = ()=>{
-    
+  const handleAddNote = async()=>{
+    const response = await fetch(`/api/get_booking_details/${ride.id_booking}/get_rides/${ride.id}/add_note`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ note: comment }),
+    })
+    if (response.status === 201) {
+      setIsDialogOpen(false)
+      setReload(true);
+      window.location.reload();
+    }
   }
 
   return (
@@ -222,7 +232,7 @@ export default function RideDetails({ ride, setShowRide, role }) {
                   <EuroIcon className="h-4 w-4 text-gray-400" />
                   <span className="text-base font-semibold text-gray-900">{ride.display_price}</span>
                 </div>
-                <button onClick={()=>setIsChangePrice(true)} className="py-1 px-3 text-white text-sm bg-stone-600 hover:bg-black rounded-md cursor-pointer">Change</button>
+                <button onClick={()=>setIsChangePrice(true)} className="py-1 px-3 text-white text-sm bg-gray-600 hover:bg-gray-900 rounded-md cursor-pointer">Change</button>
               </div>
             </div>
             :
@@ -232,7 +242,7 @@ export default function RideDetails({ ride, setShowRide, role }) {
                 <div className="flex items-center gap-2">
                   <input type="number" className="p-1 border border-gray-200 focus:border-gray-500 hover:border-gray-500 focus:border-gray-500 rounded-md" id="newPrice" name="newPrice" value={newPrice} onChange={(e) => setNewPrice(e.target.value)}/>
                 </div>
-                <button onClick={changeDisplayPrice} className={`py-1 px-3 text-white text-sm rounded-md cursor-pointer ${newPrice ? "bg-stone-800 hover:bg-black": "bg-stone-500"}`}>Save</button>
+                <button onClick={changeDisplayPrice} className={`py-1 px-3 text-white text-sm rounded-md cursor-pointer ${newPrice ? "bg-gray-800 hover:bg-gray-900": "bg-gray-500"}`}>Save</button>
               </div>
             </div>
             }
