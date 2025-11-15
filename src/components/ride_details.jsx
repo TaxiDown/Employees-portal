@@ -14,6 +14,7 @@ import { EuroIcon } from "lucide-react"
 import { LaptopMinimalCheck } from "lucide-react"
 import { Trash } from "lucide-react"
 import { SquarePen } from "lucide-react"
+import Cookies from 'js-cookie'
 
 export default function RideDetails({ rideData, setShowRide, role }) {
   const router = useRouter()
