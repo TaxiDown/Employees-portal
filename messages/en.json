@@ -211,7 +211,12 @@
     "previous": "Previous",
     "next": "Next",
     "drivers": "Drivers",
-    "unassigned":"Unassigned"
+    "unassigned":"Unassigned", 
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "payment_status":"Payment Status",
+    "price":"Price",
+    "filter":"Filter"
   },
   "dateFilter": {
     "next90": "Next 90 days",

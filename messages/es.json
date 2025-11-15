@@ -211,7 +211,12 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "drivers": "Conductores",
-    "unassigned":"Sin asignar"
+    "unassigned":"Sin asignar",
+    "paid": "Pagado",
+    "unpaid": "No pagado",
+    "payment_status": "Estado del pago",
+    "price": "Precio",
+    "filter":"Filtrar"
   },
   "dateFilter": {
     "next90": "Próximos 90 días",

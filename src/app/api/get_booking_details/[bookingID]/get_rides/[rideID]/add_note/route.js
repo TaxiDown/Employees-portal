@@ -35,8 +35,8 @@ export async function POST(request, {params}){
 
             });
             const ride =  await response.json();
-            if(response.status === 200){
-                const res = NextResponse.json(ride);
+            if(response.status === 201){
+                const res = NextResponse.json(ride, {status: response.status });
                 if (cookieHeader2){
                     res.headers.set('Set-Cookie', cookieHeader2)
                 }

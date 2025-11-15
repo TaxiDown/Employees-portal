@@ -116,7 +116,7 @@ export default function BookingDetails({ bookingID, role }) {
   return (
     <div className='w-full min-h-screen h-max px-12 mt-30 mb-10 lg:w-[70%]'>
       {showRide &&
-        <RideDetails role={role} ride={showRide} setShowRide={setShowRide} />
+        <RideDetails role={role} rideData={showRide} setShowRide={setShowRide} />
       }
       <h1 className='font-medium text-2xl my-3'>
         {dict("booking")} #{bookingDetails.booking_number}

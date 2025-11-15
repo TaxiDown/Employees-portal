@@ -1,21 +1,29 @@
 'use client'
 
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import NotFound from './not_found';
 import { useTranslations } from 'next-intl';
 import { Mail, Phone, Calendar } from 'lucide-react';
-import { MapPin, Clock, ChevronRight, ChevronLeft} from 'lucide-react';
+import { MapPin, Clock, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import RideDetails from './ride_details';
 import { BadgeCheck, BadgeX } from 'lucide-react';
 import Loading from './loading';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { FilePlusIcon } from 'lucide-react';
+import { DateRangeFilter } from './date_filter';
+import Cookies from 'js-cookie'
 
 export default function DriverDetails({ driverID }) {
   const router = useRouter();
+  const pageSize = 10;
   const [bookings, setBookings] = useState([]);
   const [driverDetails, setDriverDetails] = useState([]);
+  const [page, setPage] = useState(1);
   const [notFound, setNotFound] = useState(false);
   const dict = useTranslations("table");
   const driver = useTranslations("driver");
@@ -24,23 +32,66 @@ export default function DriverDetails({ driverID }) {
   const [isLoading, setIsLoading] = useState(true);
   const [showRide, setShowRide] = useState("");
 
-  useEffect(() => {
-    const getbookings = async () => {
-      const response = await fetch(`/api/get_driver_details/${driverID}/get_bookings`, {
-        method: 'GET',
-        Credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      })
-      if (response.status === 200) {
-        const bookingsObject = await response.json();
-        console.log(bookingsObject)
-        setBookings(bookingsObject.results);
-      } else if (response.status === 401)
-        router.push('/unauthorized');
-    }
+  const [numPages, setNumPages] = useState(0);
+  const observerTarget = useRef(null);
+  const [isLoadingItems, setIsLoadingItems] = useState(false);
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isInvoiceOpen, setIsIvoiceOpen] = useState(false);
+  const [invoice, setInvoice] = useState("");
+
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState("paid");
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'paid':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
+      case 'unpaid':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100';
+    }
+  };
+
+  const getbookings = async () => {
+    const response = await fetch(`/api/get_driver_details/${driverID}/get_bookings?page_size=${pageSize}&page=${page}`, {
+      method: 'GET',
+      Credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (response.status === 200) {
+      const bookingsObject = await response.json();
+      setBookings(prev => {
+        const prevIds = new Set(prev.map(b => b.id));
+
+        const newItems = bookingsObject.results.filter(
+          b => !prevIds.has(b.id)
+        );
+
+        return [...prev, ...newItems];
+      });
+      setIsLoading(false);
+      const max = Math.ceil(bookingsObject.count / pageSize);
+      setNumPages(max);
+    } else if (response.status === 401)
+      router.push('/unauthorized');
+
+    setIsLoadingItems(false);
+
+  }
+
+  useEffect(() => {
+    if (page === 1) return;
+    getbookings();
+  }, [page])
+
+  useEffect(() => {
     const getdriverDetails = async () => {
       const response = await fetch(`/api/get_driver_details/${driverID}`, {
         method: 'GET',
@@ -120,7 +171,7 @@ export default function DriverDetails({ driverID }) {
         'Content-Type': 'application/json'
       }
     })
-    
+
     if (response.status === 200) {
       const detailsObject = await response.json();
       setShowRide(detailsObject);
@@ -129,6 +180,55 @@ export default function DriverDetails({ driverID }) {
     else if (response.status === 404)
       setNotFound(true);
   }
+
+  const generateInvoice = async (e) => {
+    const response = await fetch(`/api/generate_invoice`, {
+      method: 'POST',
+      Credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id_driver: driverID,
+        from_date: startDate,
+        to_date: endDate,
+        status: status,
+        amount_paid: null,
+        datetime_paid: null
+       }),
+    })
+    if (response.status === 200) {
+      const detailsObject = await response.json();
+      console.log(detailsObject)
+      setInvoice(detailsObject);
+      setIsIvoiceOpen(true);
+    } else if (response.status === 401)
+      router.push('/unauthorized');
+    else if (response.status === 404)
+      setNotFound(true);
+  }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingItems) {
+          setIsLoadingItems(true);
+          loadMoreItems();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  });
+
+  const loadMoreItems = () => {
+    if (page < numPages) setPage(page + 1);
+  };
 
   if (notFound)
     return <NotFound />
@@ -141,12 +241,16 @@ export default function DriverDetails({ driverID }) {
       {showRide &&
         <RideDetails ride={showRide} setShowRide={setShowRide} />
       }
-      <h1 className='font-medium text-2xl my-3 flex items-center gap-2'>
-        {driverDetails.first_name} {driverDetails.last_name}
-        {driverDetails.is_active
-          ? <BadgeCheck strokeWidth={2.75} className='text-green-400' />
-          : <BadgeX strokeWidth={2.75} className='text-red-600' />}
-      </h1>
+      <div className='flex justify-between mb-3'>
+        <h1 className='font-medium text-2xl my-3 flex items-center gap-2'>
+          {driverDetails.first_name} {driverDetails.last_name}
+          {driverDetails.is_active
+            ? <BadgeCheck strokeWidth={2.75} className='text-green-400' />
+            : <BadgeX strokeWidth={2.75} className='text-red-600' />}
+        </h1>
+        <button onClick={() => setIsOpen(true)} className='flex gap-2 items-center text-lg text-orange-500 hover:text-orange-700 cursor-pointer font-semibold'>
+        <FilePlusIcon className="" size={20} strokeWidth={2} />Generate Invoice</button>
+      </div>
       <div className='flex flex-col lg:flex-row gap-5 justify-between'>
         <div className='flex flex-col gap-3'>
           <div className="flex items-center space-x-3">
@@ -177,6 +281,115 @@ export default function DriverDetails({ driverID }) {
             }
           </div>
         </div>
+
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-balance">Invoice</DialogTitle>
+          </DialogHeader>
+          <div className='mx-2 mt-2 flex flex-col'>
+          <div className='flex gap-2 relative'>
+            <p className="text-sm text-gray-500 mb-1">{dict("filter")}</p>
+            <DateRangeFilter className="absolute top-50" setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
+          </div>
+          <div className='mt-3 flex gap-2'>
+              <p className="text-sm text-gray-500">{dict("payment_status")}</p>
+              <DropdownMenu open={open} onOpenChange={setOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Badge
+                    className={`px-3 py-1 rounded-md text-black bg-white border border-stone-300 cursor-pointer hover:opacity-80 transition-opacity text-sm font-normal`}
+                  >
+                    {status == dict("paid")? dict("paid") : dict("unpaid")}
+                  </Badge>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => setStatus("Paid")}>{dict("paid")}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setStatus("Unpaid")}>{dict("unpaid")}</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            </div>
+          <div className='flex justify-center'>
+            <button className='bg-orange-500 hover:bg-orange-600 rounded-full px-3 py-1' onClick={generateInvoice}> Generate</button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+
+      <Dialog open={isInvoiceOpen} onOpenChange={setIsIvoiceOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-balance">Invoice Details</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* Invoice Number */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">
+                Invoice Number
+              </p>
+              <p className="text-lg font-semibold">{invoice?.invoice_number}</p>
+            </div>
+
+            {/* Status */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">Status</p>
+              <Badge className={getStatusColor(invoice?.status)}>
+                {invoice?.status}
+              </Badge>
+            </div>
+
+            {/* Driver Information */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">Driver</p>
+              <p className="text-base">
+                {invoice?.driver?.first_name} {invoice?.driver?.last_name}
+              </p>
+            </div>
+
+            {/* Amount Information */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total Amount
+                </p>
+                <p className="text-base font-semibold">
+                  {invoice.total_amount !== null ? `$${invoice?.total_amount}` : 'N/A'}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Amount Paid
+                </p>
+                <p className="text-base font-semibold">
+                  {invoice.amount_paid !== null ? `$${invoice?.amount_paid}` : 'N/A'}
+                </p>
+              </div>
+            </div>
+
+            {/* Payment Date */}
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-muted-foreground">
+                Payment Date
+              </p>
+              <p className="text-base">
+                {invoice?.datetime_paid ? new Date(invoice?.datetime_paid).toLocaleDateString() : 'Not paid yet'}
+              </p>
+            </div>
+
+            {/* Rides Information */}
+            {invoice?.invoice_rides && invoice?.invoice_rides?.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total Rides
+                </p>
+                <p className="text-base">{invoice?.invoice_rides?.length}</p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
 
       {driverDetails?.services?.service &&
@@ -190,6 +403,7 @@ export default function DriverDetails({ driverID }) {
         </div>
       }
 
+
       <div className="w-full mt-10">
         <div>
           <div className="overflow-x-auto">
@@ -198,10 +412,9 @@ export default function DriverDetails({ driverID }) {
                 <TableRow>
                   <TableHead className="font-semibold">{dict("bookingNumber")}</TableHead>
                   <TableHead className="font-semibold">{dict("type")}</TableHead>
-                  <TableHead className="font-semibold">{dict("status")}</TableHead>
                   <TableHead className="font-semibold">{dict("vehicleCategory")}</TableHead>
+                  <TableHead className="font-semibold">{dict("price")}</TableHead>
                   <TableHead className="font-semibold">{dict("pickupDetails")}</TableHead>
-                  <TableHead className="font-semibold">{dict("contactInfo")}</TableHead>
                   <TableHead className="font-semibold">{dict("passengers")}</TableHead>
                 </TableRow>
               </TableHeader>
@@ -215,13 +428,9 @@ export default function DriverDetails({ driverID }) {
                       <Badge variant="outline" className="font-medium">{getBookingType(booking)}</Badge>
                     </TableCell>
 
-                    <TableCell>
-                      <Badge variant={getStatusVariant(booking.status)} className={getColor(booking.status)}>
-                        {booking.status ? (statusDict(booking.status.toLowerCase()) || booking.status) : "Undefined"}
-                      </Badge>
-                    </TableCell>
-
                     <TableCell>{booking.vehicle_category}</TableCell>
+
+                    <TableCell>{booking?.driver_price || "null"}</TableCell>
 
                     <TableCell className="space-y-1">
                       <div className="flex items-start gap-2">
@@ -243,39 +452,6 @@ export default function DriverDetails({ driverID }) {
                       </div>
                     </TableCell>
 
-                    {/*<TableCell>
-                      <div className="flex items-center gap-2">
-                        <Clock8 className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-mono">{booking.datetime_pickup.split("T")[0]}</span>
-                      </div>
-                    </TableCell>*/}
-                    {/*<TableCell className="space-y-1">
-                      {booking.drivers.length >0 ?
-                      <>
-                        {booking?.drivers?.map((driver, key)=>(
-                          <div key={key}>→ {driver}</div>
-                        ))}
-                      </>
-                      :<div className='text-center'>{dict("unassigned")}</div>}
-                    </TableCell>*/}
-
-                    <TableCell className="space-y-1">
-                      {booking.phone_number && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-mono">{booking.phone_number}</span>
-                        </div>
-                      )}
-                      {booking.email && (
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm">{booking.email}</span>
-                        </div>
-                      )}
-                      {!booking.phone_number && !booking.email && (
-                        <span className="text-sm text-muted-foreground italic">{dict("noContact")}</span>
-                      )}
-                    </TableCell>
 
                     <TableCell className="text-center">
                       <div className="text-sm">
@@ -296,6 +472,12 @@ export default function DriverDetails({ driverID }) {
           {bookings.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               <p>{dict("noRecords")}</p>
+            </div>
+          )}
+
+          {bookings.length > 0 && page < numPages && (
+            <div ref={observerTarget} className="py-8 text-center">
+              {isLoadingItems && <p>Loading more...</p>}
             </div>
           )}
 

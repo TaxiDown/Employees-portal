@@ -27,6 +27,7 @@ export async function POST(request) {
         const body = await res.json();
         response.headers.set('Set-Cookie', cookieHeader);
         response.headers.append('Set-Cookie', `role=${body.user.role}; Path=/`)
+        response.headers.append('Set-Cookie', `id=${body.user.id}; Path=/`)
         return response
       }else 
       return NextResponse.json({ message: 'error' }, { status: status })
