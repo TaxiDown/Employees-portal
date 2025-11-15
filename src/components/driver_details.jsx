@@ -16,7 +16,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { FilePlusIcon } from 'lucide-react';
 import { DateRangeFilter } from './date_filter';
-import Cookies from 'js-cookie'
 
 export default function DriverDetails({ driverID }) {
   const router = useRouter();

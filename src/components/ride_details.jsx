@@ -39,7 +39,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
   const [noteChange, setNoteChange] = useState("");
   const [updatedNote, setUpdatedNote] = useState("");
 
-  const [id, setID] = useState(null)
+  const [id, setID] = useState("")
 
   useEffect(() => {
     const cookie = Cookies.get('id') ?? null
@@ -476,7 +476,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                           <Badge className={"text-xs text-gray-500"} variant="outline">{note.updated && "Updated"} {note.timestamp}</Badge>
                         </div>
                       </div>
-                      {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black"/> : id === note?.employee?.id &&
+                      {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black"/> : id == note?.employee?.id &&
                         <div className="flex gap-2">
                           <button className="cursor-pointer" onClick={() => {setUpdatedNote(note.note); setNoteChange(note.id);}}><SquarePen className={" text-orange-500 hover:text-orange-700 "}  size={17} strokeWidth={2.5}/></button>
                           <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={17} strokeWidth={2.5}/></button>
