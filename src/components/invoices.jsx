@@ -150,11 +150,11 @@ export default function Invoices() {
           <TableHeader>
             <TableRow>
               <TableHead className="font-semibold">{invoiceDict("invoice_number")}</TableHead>
+              <TableHead className="font-semibold">{invoiceDict("driver")}</TableHead>
               <TableHead className="font-semibold">{invoiceDict("status")}</TableHead>
               <TableHead className="font-semibold">{invoiceDict("total_amount")}</TableHead>
               <TableHead className="font-semibold">{invoiceDict("amount_paid")}</TableHead>
               <TableHead className="font-semibold">{invoiceDict("datePaid")}</TableHead>
-              <TableHead className="font-semibold">{invoiceDict("driver")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -163,6 +163,10 @@ export default function Invoices() {
 
                 <TableCell className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700" onClick={()=>getInvoice(invoice.driver.id, invoice.id)}>
                     {invoice?.invoice_number}
+                </TableCell>
+
+                <TableCell className="space-y-1">
+                  {invoice?.driver?.first_name} {invoice?.driver?.last_name}
                 </TableCell>
 
                 <TableCell className="space-y-1">
@@ -185,9 +189,6 @@ export default function Invoices() {
                   </div>
                 </TableCell>
 
-                <TableCell className="space-y-1">
-                  {String(invoice?.amount_paid)}
-                </TableCell>
 
               </TableRow>
             ))}
