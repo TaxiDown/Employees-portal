@@ -40,7 +40,7 @@ export default function InvoiceDetails({
 
   const handleGenerate = async () => {
 
-    const response = await GenerateInvoice(driverID, startDate, endDate, status, true)
+    const response = await GenerateInvoice(driverID, startDate, endDate, status, false)
 
     if (response.status === 200) {
       setSaved(true);

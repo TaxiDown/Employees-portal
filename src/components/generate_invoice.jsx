@@ -23,7 +23,7 @@ export default function GenerateInvoiceForm({
     const [invoice, setInvoice] = useState("");
 
     const handleGenerate = async () => {
-        const response = await GenerateInvoice(driverID, startDate, endDate, status, false)
+        const response = await GenerateInvoice(driverID, startDate, endDate, status, true)
         if (response.status === 200) {
             setInvoice(response.data);
             setIsInvoiceOpen(true);
