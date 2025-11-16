@@ -9,13 +9,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
-export function DateRangeFilter({ setStart, setEnd }) {
+export function DateRangeFilter({ setStart, setEnd, start, end }) {
   const dict = useTranslations("dateFilter")
 
   const presets = [
     { label: dict("next90"), getValue: () => {
-        const end = new Date()
-        const start = new Date()
+        const end =  new Date()
+        const start =  new Date()
         end.setDate(start.getDate() + 90)
         return { start, end }
     }},
@@ -52,8 +52,8 @@ export function DateRangeFilter({ setStart, setEnd }) {
     }},
   ]
 
-  const [startDate, setStartDate] = useState(undefined)
-  const [endDate, setEndDate] = useState(undefined)
+  const [startDate, setStartDate] = useState(start || undefined)
+  const [endDate, setEndDate] = useState(end || undefined)
   const [tempStartDate, setTempStartDate] = useState(undefined)
   const [tempEndDate, setTempEndDate] = useState(undefined)
   const [isOpen, setIsOpen] = useState(false)
@@ -97,7 +97,7 @@ export function DateRangeFilter({ setStart, setEnd }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isOpen} className="relative" onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -111,7 +111,7 @@ export function DateRangeFilter({ setStart, setEnd }) {
             <span className="text-sm sm:hidden">{dict("filter")}</span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto max-w-80 sm:max-w-max p-0" align="end">
+        <PopoverContent className="w-auto max-w-80 sm:max-w-max p-0 absolute -top-30 md:right-0 -top-80 overflow-y-auto" align="end">
           <div className="flex sm:flex-row flex-col">
             <div className="flex sm:flex-col flex-row gap-1 md:border-r border-b md:border-b-0 border-border p-3 sm:w-max overflow-x-auto sm:overflow-x-visible">
               <div className="text-xs font-medium text-muted-foreground mb-0 md:mb-2 whitespace-nowrap md:whitespace-normal">

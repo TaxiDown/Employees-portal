@@ -3,8 +3,8 @@ import {NextResponse} from 'next/server'
 import { cookies } from "next/headers";
 import { RefreshAccessToken } from '@/app/actions/validate_token';
 
-export async function GET(req, {params}){
-    const {driverID} = await params;
+export async function POST(request){
+    const body = await request.json();
     const cookieStore = await cookies();
     let access = cookieStore.get('access')?.value;
     let refresh = cookieStore.get('refresh')?.value;
@@ -24,22 +24,23 @@ export async function GET(req, {params}){
     }
     if(access){
         try{
-            const response = await fetch(`${process.env.API_URL}api/employees/drivers/${driverID}/`, {
-                method: 'GET',
+            const response = await fetch(`${process.env.API_URL}api/employees/driver-invoices/`, {
+                method: 'POST',
+                body: JSON.stringify(body),
                 headers: {
                 'Content-Type': 'application/json',
                 'Cookie': cookieHeader2 ? cookieHeader2 : cookieHeader,
                 },
             });
-            const rides =  await response.json();
-            if(response.status === 200){
-                const res = NextResponse.json(rides);
+            const invoices =  await response.json();
+            if(response.status === 201){
+                const res = NextResponse.json(invoices);
                 if (cookieHeader2){
                     res.headers.set('Set-Cookie', cookieHeader2)
                 }
                 return res
             }else{
-                return NextResponse.json({ message: "error"} , {status: response.status })
+                return NextResponse.json({ message: invoices} , {status: response.status })
             }
         }catch(err){
             return NextResponse.json({ message: `Error ${err}` }, { status: 500 })

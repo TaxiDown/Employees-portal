@@ -39,7 +39,7 @@ const schema = z.object({
 });
 
 
-export default function PickupFor() {
+export default function PickupFor({role}) {
 
   const dict = useTranslations('pick');
 
@@ -496,6 +496,7 @@ export default function PickupFor() {
 
       if (res.status === 200) {
           const data = await res.json();
+          console.log(data)
           setEstimatedPrice(data.price);
          // router.push(`/${lang}/pickup-details?pickup=${pickupQuery}&destination=${destinationQuery}&pickCoords=${pickup.join(",")}&destinationCoords=${destinationCoords.join(",")}&phone=${phone}&pickupDate=${selectedDate}&pickupTime=${selectedTime}&price=${estimatedPrice[0]}&returnPrice=${estimatePrice[1]}&adults=${adults}&childern=${children}&note=${comment}&returnDate=${returnDate}&returnTime=${returnTime}&vehicleID=${selectedFleetID}&vehicle=${selectedFleetValue}`)
       }else if(res.status === 404){

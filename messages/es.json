@@ -18,7 +18,8 @@
     "choose_service": "O elige uno de nuestros servicios",
     "drivers": "Conductores",
     "create": "Crear reserva",
-    "bookings": "Reservas"
+    "bookings": "Reservas",
+    "invoices":"Facturas"
   },
   "auth": {
     "loginTitle": "Iniciar sesión",
@@ -179,7 +180,8 @@
     "extraInfo": "Información adicional",
     "name": "Nombre",
     "orderId": "ID de pedido",
-    "exbooking": "Reserva anterior"
+    "exbooking": "Reserva anterior",
+    "display_price": "Mostrar precio"
   },
   "table": {
     "all": "Todos",
@@ -209,7 +211,14 @@
     "of": "de",
     "entries": "entradas",
     "previous": "Anterior",
-    "next": "Siguiente"
+    "next": "Siguiente",
+    "drivers": "Conductores",
+    "unassigned":"Sin asignar",
+    "paid": "Pagado",
+    "unpaid": "No pagado",
+    "payment_status": "Estado del pago",
+    "price": "Precio",
+    "filter":"Filtrar"
   },
   "dateFilter": {
     "next90": "Próximos 90 días",
@@ -289,7 +298,12 @@
     "search_driver": "Buscar por nombre del conductor",
     "return_ride": "Viaje de regreso",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "change_payment": "Marcar como pagado",
+    "mark_unpaid": "Marcar como no pagado",
+    "add_note": "agregar nota",
+    "display_price": "Mostrar precio",
+    "date":"Fecha"
   },
   "xmlUpload": {
     "title": "Subir archivo XML",
@@ -323,5 +337,14 @@
       "valid": "Estructura XML válida",
       "ready": "Listo para procesar"
     }
-  }
+  },
+  "invoice": {
+  "invoice_number": "Número de factura",
+  "total_amount": "Importe total",
+  "amount_paid": "Importe pagado",
+  "status": "Estado",
+  "datePaid": "Fecha de pago",
+  "driver": "Conductor",
+  "invoices": "Facturas"
+}
 }

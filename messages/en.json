@@ -18,7 +18,8 @@
     "choose_service": "Or Choose One of Our Services",
     "drivers": "Drivers",
     "create": "Create Booking",
-    "bookings": "Bookings"
+    "bookings": "Bookings",
+    "invoices":"Invoices"
   },
   "auth": {
     "loginTitle": "Login",
@@ -179,7 +180,8 @@
     "extraInfo": "Extra Information", 
     "name": "Name",
     "orderId": "Order ID", 
-    "exbooking":"Ex-Booking"
+    "exbooking":"Ex-Booking",
+    "display_price" : "Display price"
   },
   "table": {
     "all": "All",
@@ -209,7 +211,14 @@
     "of": "of",
     "entries": "entries",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "drivers": "Drivers",
+    "unassigned":"Unassigned", 
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "payment_status":"Payment Status",
+    "price":"Price",
+    "filter":"Filter"
   },
   "dateFilter": {
     "next90": "Next 90 days",
@@ -289,7 +298,12 @@
     "search_driver": "Search with driver name",
     "return_ride": "Return Ride",
     "yes": "Yes",
-    "no": "No"
+    "no": "No", 
+    "change_payment": "Mark as paid",
+    "mark_unpaid": "Mark as unpaid",
+    "add_note": "Add note",
+    "display_price" : "Display price",
+    "date":"Date"
   },
   "xmlUpload": {
     "title": "Upload XML File",
@@ -323,5 +337,14 @@
       "valid": "Valid XML structure",
       "ready": "Ready for processing"
     }
+  },
+  "invoice": {
+    "invoice_number": "Invoice Number",
+    "total_amount": "Total Amount",
+    "amount_paid": "Amount Paid",
+    "status": "Status",
+    "datePaid" : "Date Paid",
+    "driver": "Driver",
+    "invoices": "Invoices"
   }
 }

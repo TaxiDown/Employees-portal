@@ -1,8 +1,7 @@
-import BookingDetails from '@/components/booking_details';
-import DriverDetails from '@/components/driver_details';
 import Navbar from '@/components/navbar'
 import React from 'react'
 import { cookies } from 'next/headers';
+import DriverInvoicess from '@/components/driver_invoices';
 
 export default async function Booking({params}) {
     const {ID} = await params;
@@ -11,7 +10,7 @@ export default async function Booking({params}) {
   return (
     <div className='flex justify-center'>
         <Navbar role={role}/>
-        <DriverDetails role={role} driverID={ID}/>
+        <DriverInvoicess role={role} driverID={ID}/>
     </div>
   )
 }

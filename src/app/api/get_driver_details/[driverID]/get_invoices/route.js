@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 import { RefreshAccessToken } from '@/app/actions/validate_token';
 
 export async function GET(req, {params}){
+    const {searchParams} = new URL(req.url);
+
     const {driverID} = await params;
     const cookieStore = await cookies();
     let access = cookieStore.get('access')?.value;
@@ -24,16 +26,17 @@ export async function GET(req, {params}){
     }
     if(access){
         try{
-            const response = await fetch(`${process.env.API_URL}api/employees/drivers/${driverID}/`, {
+            const response = await fetch(`${process.env.API_URL}api/employees/drivers/${driverID}/invoices/?${searchParams.toString()}`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json',
                 'Cookie': cookieHeader2 ? cookieHeader2 : cookieHeader,
                 },
             });
-            const rides =  await response.json();
+            const invoices =  await response.json();
             if(response.status === 200){
-                const res = NextResponse.json(rides);
+                console.log(invoices.results);
+                const res = NextResponse.json(invoices);
                 if (cookieHeader2){
                     res.headers.set('Set-Cookie', cookieHeader2)
                 }

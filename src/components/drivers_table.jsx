@@ -1,7 +1,7 @@
 'use client'
 import { CirclePlus, ChevronRight, ChevronLeft, Clock8, Search, Mail } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from './ui/button';
 import Loading from './loading';
@@ -21,7 +21,7 @@ export default function DriversTable() {
   const [page, setPage] = useState(Number(searchParams.get("page")) || 1);
   const [count, setCount] = useState(0);
   const [numPages, setNumPages] = useState(0);
-  const pageSize = 10;
+  const pageSize = 25;
   const [endIndex, setEndIndex] = useState(0);
   const [startIndex, setStartIndex] = useState(Number(searchParams.get("page")) || 1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,7 +33,67 @@ export default function DriversTable() {
     setRole(value);
   }, []);
 
+  const observerTarget = useRef(null);
+  const [isLoadingItems, setIsLoadingItems] = useState(false);
+
   useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isLoadingItems) {
+          setIsLoadingItems(true);
+          loadMoreItems();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  });
+
+  const loadMoreItems = () => {
+    if(page < numPages) setPage(page+1);
+  };
+
+  useEffect(() => {
+    const url = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries(filtering).filter(([_, v]) => v)
+      )
+    ).toString();
+    setPage(1);
+    const getBookings = async () => {
+      const response = await fetch(`/api/get_drivers?page_size=${pageSize}&${url ? `&${url.toLowerCase()}` : ''}${searchQuery ? `&driver_name=${searchQuery}` : ''}}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (response.status === 200) {
+        const bookingsObject = await response.json();
+        console.log(`page = ${page}`)
+        console.log(bookingsObject.results)
+       // console.log(Math.ceil(bookingsObject.count / pageSize))
+       setDrivers(bookingsObject.results);      
+        setIsLoading(false);
+        setCount(bookingsObject.count);
+        const max = Math.ceil(bookingsObject.count / pageSize);
+        setNumPages(max);
+        setEndIndex(Math.min(3, max))
+      } else if (response.status === 401) {
+        router.push('/unauthorized');
+      } else {
+        setError();
+      }
+      setIsLoadingItems(false);
+    }
+    getBookings();
+  }, [filtering, searchQuery]);
+
+  useEffect(() => {
+    if (page === 1) return;
     const url = new URLSearchParams(
       Object.fromEntries(Object.entries(filtering).filter(([_, v]) => v))
     ).toString();
@@ -49,7 +109,10 @@ export default function DriversTable() {
 
       if (response.status === 200) {
         const driversObject = await response.json();
-        setDrivers(driversObject.results);
+        setDrivers(prev => [
+          ...prev,
+          ...driversObject.results
+        ]);
         setIsLoading(false);
         setCount(driversObject.count);
         const max = Math.ceil(driversObject.count / pageSize);
@@ -62,7 +125,7 @@ export default function DriversTable() {
       }
     };
     getdrivers();
-  }, [page, filtering, searchQuery]);
+  }, [page]);
 
   const nextPage = () => {
     if (page < numPages) {
@@ -192,51 +255,13 @@ export default function DriversTable() {
           </div>
         )}
 
-        {drivers.length > 0 && numPages > 1 && (
-          <div className="flex items-center justify-between mt-6 pt-4 border-t">
-            {/*<div className="text-sm text-muted-foreground">
-              {dict("showing", { start: startIndex, end: Math.min(numPages, endIndex), total: numPages })}
-            </div>*/}
-            <div></div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={prevPage}
-                disabled={startIndex === 1}
-                className="flex items-center gap-1 bg-transparent"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                {dict("previous")}
-              </Button>
-
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(3, numPages - startIndex +1 )}, (_, i) => startIndex + i).map((pageNum) => (
-                  <Button
-                    key={pageNum}
-                    variant={page === pageNum ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => goToPage(pageNum)}
-                    className="min-w-[2.5rem]"
-                  >
-                    {pageNum}
-                  </Button>
-                ))}
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={nextPage}
-                disabled={page === numPages}
-                className="flex items-center gap-1 bg-transparent"
-              >
-                {dict("next")}
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+        {drivers.length > 0 && page < numPages && (
+            <div ref={observerTarget} className="py-8 text-center">
+              {isLoadingItems && <p>Loading more...</p>}
             </div>
-          </div>
-        )}
+          )}
+
+        
       </div>
     </div>
   );

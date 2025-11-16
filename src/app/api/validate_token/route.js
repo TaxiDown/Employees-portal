@@ -34,7 +34,7 @@ export async function POST() {
     
     const result = await RefreshAccessToken(refresh);
     const status = result.status;
-
+    console.log(await result.json());
     if (status === 200 ) {
       const response = NextResponse.json({ message: 'Token refreshed' }, { status: 200 });
       response.headers.set('Set-Cookie', result.setCookie);

@@ -14,6 +14,8 @@ export async function RefreshAccessToken(refresh) {
         cache: 'no-store',
         body: JSON.stringify({ refresh : refresh }),
       });
+
+      console.log(res.json());
   
       if (res.status === 200) {
         const data = await res.json();
