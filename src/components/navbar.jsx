@@ -88,6 +88,12 @@ export default function Navbar({role}) {
           >
             {dict("drivers")}
           </Link>
+          <Link
+            href={`/Invoices`}
+            className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
+          >
+            {dict("invoices")}
+          </Link>
           </>
           :<></>}
           {loggedIn ? (
@@ -133,6 +139,12 @@ export default function Navbar({role}) {
             >
               {dict("drivers")}
             </Link>
+            <Link
+            href={`/Invoices`}
+            className="flex items-center text-yellow-1000 text-sm md:text-[19px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105 transition-all duration-200"
+          >
+            {dict("invoices")}
+          </Link>
             </>
             :<></>}
             {loggedIn ? (

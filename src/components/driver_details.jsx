@@ -5,17 +5,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import NotFound from './not_found';
 import { useTranslations } from 'next-intl';
 import { Mail, Phone, Calendar } from 'lucide-react';
-import { MapPin, Clock, ChevronRight, ChevronLeft } from 'lucide-react';
+import { MapPin, Clock } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import RideDetails from './ride_details';
 import { BadgeCheck, BadgeX } from 'lucide-react';
 import Loading from './loading';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { FilePlusIcon } from 'lucide-react';
-import { DateRangeFilter } from './date_filter';
+import { StickyNote } from 'lucide-react';
+
 
 export default function DriverDetails({ driverID }) {
   const router = useRouter();
@@ -35,27 +32,6 @@ export default function DriverDetails({ driverID }) {
   const [numPages, setNumPages] = useState(0);
   const observerTarget = useRef(null);
   const [isLoadingItems, setIsLoadingItems] = useState(false);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [isInvoiceOpen, setIsIvoiceOpen] = useState(false);
-  const [invoice, setInvoice] = useState("");
-
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-
-  const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState("Unpaid");
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'paid':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100';
-      case 'unpaid':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100';
-    }
-  };
 
   const getbookings = async () => {
     const response = await fetch(`/api/get_driver_details/${driverID}/get_bookings?page_size=${pageSize}&page=${page}`, {
@@ -133,81 +109,6 @@ export default function DriverDetails({ driverID }) {
   }
 
 
-  const getStatusVariant = (status) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return "secondary"
-      case "confirmed":
-        return "outline"
-      case "completed":
-        return "default"
-      case "cancelled":
-        return "destructive"
-      default:
-        return "secondary"
-    }
-  }
-
-  const getColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "pending":
-        return "bg-orange-400"
-      case "confirmed":
-        return "border-green-500 text-green-500"
-      case "completed":
-        return "bg-green-500"
-      case "canceled":
-        return "bg-red-400"
-      default:
-        return ""
-    }
-  }
-
-  const getRide = async (e) => {
-    const response = await fetch(`/api/get_driver_details/${driverID}/get_bookings/${e.target.id}/`, {
-      method: 'GET',
-      Credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (response.status === 200) {
-      const detailsObject = await response.json();
-      setShowRide(detailsObject);
-    } else if (response.status === 401)
-      router.push('/unauthorized');
-    else if (response.status === 404)
-      setNotFound(true);
-  }
-
-  const generateInvoice = async (e) => {
-    const response = await fetch(`/api/generate_invoice`, {
-      method: 'POST',
-      Credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id_driver: driverID,
-        from_date: startDate,
-        to_date: endDate,
-        status: status,
-        amount_paid: null,
-        datetime_paid: null
-      }),
-    })
-    if (response.status === 200) {
-      const detailsObject = await response.json();
-      setInvoice(detailsObject);
-      setIsIvoiceOpen(true);
-      setIsOpen(false);
-    } else if (response.status === 401)
-      router.push('/unauthorized');
-    else if (response.status === 404)
-      setNotFound(true);
-  }
-
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -238,9 +139,6 @@ export default function DriverDetails({ driverID }) {
 
   return (
     <div className='relative w-full min-h-screen h-max px-12  mb-10 lg:w-[70%]'>
-      {showRide &&
-        <RideDetails ride={showRide} setShowRide={setShowRide} />
-      }
       <div className='sticky top-0 left-0 bg-white z-10 pb-8 pt-25 border-b border-stone-200 mb-2'>
         <div className='flex justify-between mb-3'>
           <h1 className='font-medium text-2xl my-3 flex items-center gap-2'>
@@ -249,8 +147,10 @@ export default function DriverDetails({ driverID }) {
               ? <BadgeCheck strokeWidth={2.75} className='text-green-400' />
               : <BadgeX strokeWidth={2.75} className='text-red-600' />}
           </h1>
-          <button onClick={() => setIsOpen(true)} className='flex gap-2 items-center text-lg text-orange-500 hover:text-orange-700 cursor-pointer font-semibold'>
-            <FilePlusIcon className="" size={20} strokeWidth={2} />Generate Invoice</button>
+
+          <button onClick={() => router.push(`/drivers/${driverID}/driver_invoices`)} className='flex gap-1 items-center items-center text-lg text-orange-500 hover:text-orange-700 cursor-pointer font-semibold'>
+            <StickyNote className="" size={20} strokeWidth={2} />Invoices</button>
+
         </div>
         <div className='flex flex-col lg:flex-row gap-5 justify-between'>
           <div className='flex flex-col gap-3'>
@@ -283,162 +183,6 @@ export default function DriverDetails({ driverID }) {
             </div>
           </div>
         </div>
-      </div>
-      <div>
-
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="text-balance">Invoice</DialogTitle>
-            </DialogHeader>
-            <div className='mx-2 mt-2 flex flex-col'>
-              <div className='flex gap-2 relative'>
-                <p className="text-sm text-gray-500 mb-1">{dict("filter")}</p>
-                <DateRangeFilter className="absolute top-50" setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
-              </div>
-              <div className='mt-3 flex gap-2'>
-                <p className="text-sm text-gray-500">{dict("payment_status")}</p>
-                <DropdownMenu open={open} onOpenChange={setOpen}>
-                  <DropdownMenuTrigger asChild>
-                    <Badge
-                      className={`px-3 py-1 rounded-md text-black bg-white border border-stone-300 cursor-pointer hover:opacity-80 transition-opacity text-sm font-normal`}
-                    >
-                      {status == "Paid" ? "Paid" : "Unpaid"}
-                    </Badge>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuItem onClick={() => setStatus("Paid")}>{"Paid"}</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setStatus("Unpaid")}>{"Unpaid"}</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-            </div>
-            <div className='flex justify-center'>
-              <button className='bg-orange-500 hover:bg-orange-600 rounded-full px-3 py-1' onClick={generateInvoice}> Generate</button>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-
-        <Dialog open={isInvoiceOpen} onOpenChange={setIsIvoiceOpen}>
-          <DialogContent className="max-h-[80vh] overflow-y-auto p-10 pt-13">
-            <DialogHeader className='flex flex-row justify-between mr-10'>
-              <DialogTitle className="text-balance">Invoice # {invoice?.invoice_number}</DialogTitle>
-              <Badge className={getStatusColor(invoice?.status)}>
-                {invoice?.status}
-              </Badge>
-            </DialogHeader>
-
-            <div className="space-y-6">
-              {/* Driver Information */}
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Driver</p>
-                <p className="text-base">
-                  {invoice?.driver?.first_name} {invoice?.driver?.last_name}
-                </p>
-              </div>
-
-              {/* Amount Information */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Total Amount
-                  </p>
-                  <p className="text-base font-semibold">
-                    {invoice?.total_amount !== null ? `$${invoice?.total_amount}` : 'N/A'}
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Amount Paid
-                  </p>
-                  <p className="text-base font-semibold">
-                    {invoice?.amount_paid !== null ? `$${invoice?.amount_paid}` : 'N/A'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Payment Date */}
-              {invoice?.status == "paid" &&
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Payment Date
-                  </p>
-                  <p className="text-base">
-                    {invoice?.datetime_paid ? new Date(invoice?.datetime_paid).toLocaleDateString() : 'Not paid yet'}
-                  </p>
-                </div>
-              }
-            </div>
-
-            <div>
-              <div className="overflow-x-auto mt-1 ">
-                <h2 className='font-medium text-lg my-2 text-neutral-600'>{rideDict("bookingRides")} <Badge className="text-base rounded-full px-2 text-sm bg-neutral-200 text-neutral-700">{invoice?.invoice_rides?.length}</Badge>
-                </h2>
-
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="font-semibold">{dict("bookingNumber")}</TableHead>
-                      <TableHead className="font-semibold">{rideDict("pickTime")}</TableHead>
-                      <TableHead className="font-semibold">{rideDict("pickupLocation")}</TableHead>
-                      <TableHead className="font-semibold">{rideDict("destination")}</TableHead>
-                      <TableHead className="font-semibold">{dict("price")}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {invoice?.invoice_rides && invoice?.invoice_rides?.map((ride) => (
-                      <TableRow key={ride?.id} className="hover:bg-muted/50">
-
-                      <TableCell className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700">{ride.booking_number}</TableCell>
-
-                      <TableCell className="space-y-1">
-                          <div className="flex items-start gap-2">
-                            <div className="text-sm text-muted-foreground">
-                              <div className="font-medium">{ride.return_ride ? formatDateTime(ride?.datetime_return) : formatDateTime(ride?.datetime_pickup)}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-
-                        <TableCell className="space-y-1">
-                          <div className="flex items-start gap-2">
-                            <div className="text-sm">
-                              <div title={ride?.pickup_location}>{formatLocation(ride?.pickup_location)}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        
-
-                        <TableCell className="space-y-1">
-                          <div className="flex items-start gap-2">
-                            <div className="text-sm ">
-                              {ride?.dropoff_location ? (
-                                <div title={ride?.dropoff_location}>{formatLocation(ride?.dropoff_location)}</div>
-                              ) :
-                                <div>{"null"}</div>}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="space-y-1">
-                          {String(ride?.display_price)}
-                        </TableCell>
-
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {invoice?.invoice_rides?.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>{rideDict("noRecords")}</p>
-                </div>
-              )}
-            </div>
-
-          </DialogContent>
-        </Dialog>
       </div>
 
       {
@@ -530,89 +274,8 @@ export default function DriverDetails({ driverID }) {
               {isLoadingItems && <p>Loading more...</p>}
             </div>
           )}
-
-          {/*bookings.length > 0 && numPages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t">
-              {/*<div className="text-sm text-muted-foreground">
-                {dict("showing")} {startIndex} {dict("to")} {Math.min(numPages, endIndex)} {dict("of")} {numPages} {dict("entries")}
-              </div>}
-              <div></div>
-
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={prevPage} disabled={startIndex === 1} className="flex items-center gap-1 bg-transparent">
-                  <ChevronLeft className="h-4 w-4" />
-                  {dict("previous")}
-                </Button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: Math.min(3, numPages - startIndex +1 ) }, (_, i) => page + i).map((pageNum) => (
-                    <Button
-                      key={pageNum}
-                      variant={page === pageNum ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => goToPage(pageNum)}
-                      className="min-w-[2.5rem]"
-                    >
-                      {pageNum}
-                    </Button>
-                  ))}
-                </div>
-
-                <Button variant="outline" size="sm" onClick={nextPage} disabled={page === numPages} className="flex items-center gap-1 bg-transparent">
-                  {dict("next")}
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          )*/}
         </div>
       </div>
-
-      {/*<div>
-        <div className="overflow-x-auto mt-3 ">
-          <h2 className='font-medium text-lg my-2 text-neutral-600'>{dict("driverbookings")}</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="font-semibold">{dict("rideId")}</TableHead>
-                <TableHead className="font-semibold">{dict("status")}</TableHead>
-                <TableHead className="font-semibold">{dict("returnRide")}</TableHead>
-                <TableHead className="font-semibold">{dict("driver")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {bookings && bookings.map((booking) => (
-                <TableRow key={booking.id} className="hover:bg-muted/50">
-                  <TableCell
-                    id={booking.id}
-                    onClick={getRide}
-                    className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700"
-                  >
-                    {booking.id}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusVariant(booking.status)} className={getColor(booking.status)}>
-                      {statusDict(booking.status.toLowerCase())|| booking.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="space-y-1">
-                    {String(booking.return_ride)}
-                  </TableCell>
-                  <TableCell className="space-y-1">
-                    {booking.id_driver.first_name || dict("unassigned")} {booking.id_driver.last_name}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {bookings.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>{dict("noRecords")}</p>
-          </div>
-        )}
-      </div>*/}
     </div >
   )
 }

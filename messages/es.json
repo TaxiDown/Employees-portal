@@ -18,7 +18,8 @@
     "choose_service": "O elige uno de nuestros servicios",
     "drivers": "Conductores",
     "create": "Crear reserva",
-    "bookings": "Reservas"
+    "bookings": "Reservas",
+    "invoices":"Facturas"
   },
   "auth": {
     "loginTitle": "Iniciar sesión",

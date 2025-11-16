@@ -18,7 +18,8 @@
     "choose_service": "Or Choose One of Our Services",
     "drivers": "Drivers",
     "create": "Create Booking",
-    "bookings": "Bookings"
+    "bookings": "Bookings",
+    "invoices":"Invoices"
   },
   "auth": {
     "loginTitle": "Login",
@@ -336,5 +337,14 @@
       "valid": "Valid XML structure",
       "ready": "Ready for processing"
     }
+  },
+  "invoice": {
+    "invoice_number": "Invoice Number",
+    "total_amount": "Total Amount",
+    "amount_paid": "Amount Paid",
+    "status": "Status",
+    "datePaid" : "Date Paid",
+    "driver": "Driver",
+    "invoices": "Invoices"
   }
 }
