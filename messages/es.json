@@ -337,5 +337,14 @@
       "valid": "Estructura XML válida",
       "ready": "Listo para procesar"
     }
-  }
+  },
+  "invoice": {
+  "invoice_number": "Número de factura",
+  "total_amount": "Importe total",
+  "amount_paid": "Importe pagado",
+  "status": "Estado",
+  "datePaid": "Fecha de pago",
+  "driver": "Conductor",
+  "invoices": "Facturas"
+}
 }
