@@ -41,7 +41,6 @@ export async function GET(req, {params}){
                 }
                 return res
             }else{
-                console.log(response.status)
                 return NextResponse.json({ message: "error"} , {status: response.status })
             }
         }catch(err){

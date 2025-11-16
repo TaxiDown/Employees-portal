@@ -68,7 +68,7 @@ export default function Navbar({role}) {
         </div>
       </div>
     }
-    <div className={`text-black lg:h-13  flex justify-between  items-center md:pl-10 md:pr-10 pr-3 pl-3 z-40 ${isMobileMenuOpen ? "bg-white" :"bg-transperent shadow-md"} backdrop-blur-sm fixed w-full z-40 top-0 left-0 h-15`}>
+    <div className={`text-black lg:h-13  flex justify-between  items-center md:pl-10 md:pr-10 pr-3 pl-3 z-40 ${isMobileMenuOpen ? "bg-white" :"bg-white shadow-md"} backdrop-blur-sm fixed w-full z-40 top-0 left-0 h-15`}>
         <Link href={`/`} className='text-yellow-1000 md:text-[19px] text-[15px] font-medium lg:font-bold hover:text-yellow-600 hover:scale-105'> 
           <h3 className='text-[18px] md:text-[20px] font-bold'>{name}</h3>
         </Link>  

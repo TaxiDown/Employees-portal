@@ -26,8 +26,9 @@ export default function DriverDetails({ driverID }) {
   const [notFound, setNotFound] = useState(false);
   const dict = useTranslations("table");
   const driver = useTranslations("driver");
+  const rideDict = useTranslations("pick");
+  const statusrideDict = useTranslations("status");
 
-  const statusDict = useTranslations("status");
   const [isLoading, setIsLoading] = useState(true);
   const [showRide, setShowRide] = useState("");
 
@@ -43,7 +44,7 @@ export default function DriverDetails({ driverID }) {
   const [endDate, setEndDate] = useState(null);
 
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState("paid");
+  const [status, setStatus] = useState("Unpaid");
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -133,7 +134,7 @@ export default function DriverDetails({ driverID }) {
 
 
   const getStatusVariant = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "pending":
         return "secondary"
       case "confirmed":
@@ -148,7 +149,7 @@ export default function DriverDetails({ driverID }) {
   }
 
   const getColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case "pending":
         return "bg-orange-400"
       case "confirmed":
@@ -194,13 +195,13 @@ export default function DriverDetails({ driverID }) {
         status: status,
         amount_paid: null,
         datetime_paid: null
-       }),
+      }),
     })
     if (response.status === 200) {
       const detailsObject = await response.json();
-      console.log(detailsObject)
       setInvoice(detailsObject);
       setIsIvoiceOpen(true);
+      setIsOpen(false);
     } else if (response.status === 401)
       router.push('/unauthorized');
     else if (response.status === 404)
@@ -236,174 +237,224 @@ export default function DriverDetails({ driverID }) {
     return <Loading />
 
   return (
-    <div className='w-full min-h-screen h-max px-12 mt-30 mb-10 lg:w-[70%]'>
+    <div className='relative w-full min-h-screen h-max px-12  mb-10 lg:w-[70%]'>
       {showRide &&
         <RideDetails ride={showRide} setShowRide={setShowRide} />
       }
-      <div className='flex justify-between mb-3'>
-        <h1 className='font-medium text-2xl my-3 flex items-center gap-2'>
-          {driverDetails.first_name} {driverDetails.last_name}
-          {driverDetails.is_active
-            ? <BadgeCheck strokeWidth={2.75} className='text-green-400' />
-            : <BadgeX strokeWidth={2.75} className='text-red-600' />}
-        </h1>
-        <button onClick={() => setIsOpen(true)} className='flex gap-2 items-center text-lg text-orange-500 hover:text-orange-700 cursor-pointer font-semibold'>
-        <FilePlusIcon className="" size={20} strokeWidth={2} />Generate Invoice</button>
-      </div>
-      <div className='flex flex-col lg:flex-row gap-5 justify-between'>
-        <div className='flex flex-col gap-3'>
-          <div className="flex items-center space-x-3">
-            <Calendar className="w-5 h-5 text-orange-500" />
-            <div>
-              <p className="font-medium">{driver("dateJoined")}</p>
-              <p className="text-gray-600">
-                {driverDetails.date_joined.split("T")[0]}&nbsp;&nbsp;&nbsp;
-                {driverDetails.date_joined.split("T")[1]}
-              </p>
-            </div>
-          </div>
+      <div className='sticky top-0 left-0 bg-white z-10 pb-8 pt-25 border-b border-stone-200 mb-2'>
+        <div className='flex justify-between mb-3'>
+          <h1 className='font-medium text-2xl my-3 flex items-center gap-2'>
+            {driverDetails?.first_name} {driverDetails?.last_name}
+            {driverDetails?.is_active
+              ? <BadgeCheck strokeWidth={2.75} className='text-green-400' />
+              : <BadgeX strokeWidth={2.75} className='text-red-600' />}
+          </h1>
+          <button onClick={() => setIsOpen(true)} className='flex gap-2 items-center text-lg text-orange-500 hover:text-orange-700 cursor-pointer font-semibold'>
+            <FilePlusIcon className="" size={20} strokeWidth={2} />Generate Invoice</button>
         </div>
-        <div className='flex flex-col gap-7'>
-          <div className='flex items-center space-x-3'>
-            <Mail size={17} className='w-5 h-5 text-orange-500' />
-            <div>
-              <p className="font-medium text-sm">{driver("contactInfo")}</p>
-              <a href={`mailto:${driverDetails.email}`} className='flex items-center gap-2 text-gray-600 text-lg hover:text-orange-600 '>
-                {driverDetails.email}
-              </a>
-            </div>
-            {driverDetails?.phone_number &&
-              <div className='flex items-center gap-2 text-lg'>
-                <Phone size={17} />
-                {driverDetails.phone_number}
+        <div className='flex flex-col lg:flex-row gap-5 justify-between'>
+          <div className='flex flex-col gap-3'>
+            <div className="flex items-center space-x-3">
+              <Calendar className="w-5 h-5 text-orange-500" />
+              <div>
+                <p className="font-medium">{driver("dateJoined")}</p>
+                <p className="text-gray-600">
+                  {driverDetails?.date_joined?.split("T")[0]}&nbsp;&nbsp;&nbsp;
+                  {driverDetails?.date_joined?.split("T")[1]}
+                </p>
               </div>
-            }
+            </div>
+          </div>
+          <div className='flex flex-col gap-7'>
+            <div className='flex items-center space-x-3'>
+              <Mail size={17} className='w-5 h-5 text-orange-500' />
+              <div>
+                <p className="font-medium text-sm">{driver("contactInfo")}</p>
+                <a href={`mailto:${driverDetails?.email}`} className='flex items-center gap-2 text-gray-600 text-lg hover:text-orange-600 '>
+                  {driverDetails?.email}
+                </a>
+              </div>
+              {driverDetails?.phone_number &&
+                <div className='flex items-center gap-2 text-lg'>
+                  <Phone size={17} />
+                  {driverDetails.phone_number}
+                </div>
+              }
+            </div>
           </div>
         </div>
+      </div>
+      <div>
 
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-balance">Invoice</DialogTitle>
-          </DialogHeader>
-          <div className='mx-2 mt-2 flex flex-col'>
-          <div className='flex gap-2 relative'>
-            <p className="text-sm text-gray-500 mb-1">{dict("filter")}</p>
-            <DateRangeFilter className="absolute top-50" setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
-          </div>
-          <div className='mt-3 flex gap-2'>
-              <p className="text-sm text-gray-500">{dict("payment_status")}</p>
-              <DropdownMenu open={open} onOpenChange={setOpen}>
-                <DropdownMenuTrigger asChild>
-                  <Badge
-                    className={`px-3 py-1 rounded-md text-black bg-white border border-stone-300 cursor-pointer hover:opacity-80 transition-opacity text-sm font-normal`}
-                  >
-                    {status == dict("paid")? dict("paid") : dict("unpaid")}
-                  </Badge>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => setStatus("Paid")}>{dict("paid")}</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setStatus("Unpaid")}>{dict("unpaid")}</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-balance">Invoice</DialogTitle>
+            </DialogHeader>
+            <div className='mx-2 mt-2 flex flex-col'>
+              <div className='flex gap-2 relative'>
+                <p className="text-sm text-gray-500 mb-1">{dict("filter")}</p>
+                <DateRangeFilter className="absolute top-50" setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
+              </div>
+              <div className='mt-3 flex gap-2'>
+                <p className="text-sm text-gray-500">{dict("payment_status")}</p>
+                <DropdownMenu open={open} onOpenChange={setOpen}>
+                  <DropdownMenuTrigger asChild>
+                    <Badge
+                      className={`px-3 py-1 rounded-md text-black bg-white border border-stone-300 cursor-pointer hover:opacity-80 transition-opacity text-sm font-normal`}
+                    >
+                      {status == "Paid" ? "Paid" : "Unpaid"}
+                    </Badge>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    <DropdownMenuItem onClick={() => setStatus("Paid")}>{"Paid"}</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setStatus("Unpaid")}>{"Unpaid"}</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
 
             </div>
-          <div className='flex justify-center'>
-            <button className='bg-orange-500 hover:bg-orange-600 rounded-full px-3 py-1' onClick={generateInvoice}> Generate</button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-
-      <Dialog open={isInvoiceOpen} onOpenChange={setIsIvoiceOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-balance">Invoice Details</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-6">
-            {/* Invoice Number */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">
-                Invoice Number
-              </p>
-              <p className="text-lg font-semibold">{invoice?.invoice_number}</p>
+            <div className='flex justify-center'>
+              <button className='bg-orange-500 hover:bg-orange-600 rounded-full px-3 py-1' onClick={generateInvoice}> Generate</button>
             </div>
+          </DialogContent>
+        </Dialog>
 
-            {/* Status */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Status</p>
+
+        <Dialog open={isInvoiceOpen} onOpenChange={setIsIvoiceOpen}>
+          <DialogContent className="max-h-[80vh] overflow-y-auto p-10 pt-13">
+            <DialogHeader className='flex flex-row justify-between mr-10'>
+              <DialogTitle className="text-balance">Invoice # {invoice?.invoice_number}</DialogTitle>
               <Badge className={getStatusColor(invoice?.status)}>
                 {invoice?.status}
               </Badge>
-            </div>
+            </DialogHeader>
 
-            {/* Driver Information */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">Driver</p>
-              <p className="text-base">
-                {invoice?.driver?.first_name} {invoice?.driver?.last_name}
-              </p>
-            </div>
-
-            {/* Amount Information */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-6">
+              {/* Driver Information */}
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Total Amount
-                </p>
-                <p className="text-base font-semibold">
-                  {invoice.total_amount !== null ? `$${invoice?.total_amount}` : 'N/A'}
+                <p className="text-sm font-medium text-muted-foreground">Driver</p>
+                <p className="text-base">
+                  {invoice?.driver?.first_name} {invoice?.driver?.last_name}
                 </p>
               </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Amount Paid
-                </p>
-                <p className="text-base font-semibold">
-                  {invoice.amount_paid !== null ? `$${invoice?.amount_paid}` : 'N/A'}
-                </p>
+
+              {/* Amount Information */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Amount
+                  </p>
+                  <p className="text-base font-semibold">
+                    {invoice?.total_amount !== null ? `$${invoice?.total_amount}` : 'N/A'}
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Amount Paid
+                  </p>
+                  <p className="text-base font-semibold">
+                    {invoice?.amount_paid !== null ? `$${invoice?.amount_paid}` : 'N/A'}
+                  </p>
+                </div>
               </div>
+
+              {/* Payment Date */}
+              {invoice?.status == "paid" &&
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Payment Date
+                  </p>
+                  <p className="text-base">
+                    {invoice?.datetime_paid ? new Date(invoice?.datetime_paid).toLocaleDateString() : 'Not paid yet'}
+                  </p>
+                </div>
+              }
             </div>
 
-            {/* Payment Date */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">
-                Payment Date
-              </p>
-              <p className="text-base">
-                {invoice?.datetime_paid ? new Date(invoice?.datetime_paid).toLocaleDateString() : 'Not paid yet'}
-              </p>
+            <div>
+              <div className="overflow-x-auto mt-1 ">
+                <h2 className='font-medium text-lg my-2 text-neutral-600'>{rideDict("bookingRides")} <Badge className="text-base rounded-full px-2 text-sm bg-neutral-200 text-neutral-700">{invoice?.invoice_rides?.length}</Badge>
+                </h2>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="font-semibold">{dict("bookingNumber")}</TableHead>
+                      <TableHead className="font-semibold">{rideDict("pickTime")}</TableHead>
+                      <TableHead className="font-semibold">{rideDict("pickupLocation")}</TableHead>
+                      <TableHead className="font-semibold">{rideDict("destination")}</TableHead>
+                      <TableHead className="font-semibold">{dict("price")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {invoice?.invoice_rides && invoice?.invoice_rides?.map((ride) => (
+                      <TableRow key={ride?.id} className="hover:bg-muted/50">
+
+                      <TableCell className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700">{ride.booking_number}</TableCell>
+
+                      <TableCell className="space-y-1">
+                          <div className="flex items-start gap-2">
+                            <div className="text-sm text-muted-foreground">
+                              <div className="font-medium">{ride.return_ride ? formatDateTime(ride?.datetime_return) : formatDateTime(ride?.datetime_pickup)}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+
+                        <TableCell className="space-y-1">
+                          <div className="flex items-start gap-2">
+                            <div className="text-sm">
+                              <div title={ride?.pickup_location}>{formatLocation(ride?.pickup_location)}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        
+
+                        <TableCell className="space-y-1">
+                          <div className="flex items-start gap-2">
+                            <div className="text-sm ">
+                              {ride?.return_ride ? (
+                                <div title={ride?.dropoff_location}>{formatLocation(ride?.dropoff_location)}</div>
+                              ) :
+                                <div>{"null"}</div>}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="space-y-1">
+                          {String(ride?.display_price)}
+                        </TableCell>
+
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {invoice?.invoice_rides?.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>{rideDict("noRecords")}</p>
+                </div>
+              )}
             </div>
 
-            {/* Rides Information */}
-            {invoice?.invoice_rides && invoice?.invoice_rides?.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">
-                  Total Rides
-                </p>
-                <p className="text-base">{invoice?.invoice_rides?.length}</p>
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      {driverDetails?.services?.service &&
+      {
+        driverDetails?.services?.service &&
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-2 mt-5">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-600">
               {driver("service")}
-              <Badge variant="outline" className='text-orange-700'>{driverDetails.services.service}</Badge>
+              <Badge variant="outline" className='text-orange-700'>{driverDetails?.services?.service}</Badge>
             </h3>
           </div>
         </div>
       }
 
 
-      <div className="w-full mt-10">
+      <div className="w-full mt-0">
         <div>
           <div className="overflow-x-auto">
             <Table>
@@ -427,7 +478,7 @@ export default function DriverDetails({ driverID }) {
                       <Badge variant="outline" className="font-medium">{getBookingType(booking)}</Badge>
                     </TableCell>
 
-                    <TableCell>{booking.vehicle_category}</TableCell>
+                    <TableCell>{booking?.vehicle_category}</TableCell>
 
                     <TableCell>{booking?.driver_price || "null"}</TableCell>
 
@@ -435,16 +486,16 @@ export default function DriverDetails({ driverID }) {
                       <div className="flex items-start gap-2">
                         <Clock className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                         <div className="text-sm">
-                          <div className="font-medium">{formatDateTime(booking.datetime_pickup)}</div>
+                          <div className="font-medium">{formatDateTime(booking?.datetime_pickup)}</div>
                         </div>
                       </div>
                       <div className="flex items-start gap-2">
                         <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground flex-shrink-0" />
                         <div className="text-sm text-muted-foreground">
-                          <div title={booking.pickup_location}>{formatLocation(booking.pickup_location)}</div>
-                          {booking.dropoff_location && (
-                            <div className="mt-1 text-xs" title={booking.dropoff_location}>
-                              → {formatLocation(booking.dropoff_location)}
+                          <div title={booking?.pickup_location}>{formatLocation(booking?.pickup_location)}</div>
+                          {booking?.dropoff_location && (
+                            <div className="mt-1 text-xs" title={booking?.dropoff_location}>
+                              → {formatLocation(booking?.dropoff_location)}
                             </div>
                           )}
                         </div>
@@ -454,10 +505,10 @@ export default function DriverDetails({ driverID }) {
 
                     <TableCell className="text-center">
                       <div className="text-sm">
-                        <div className="font-medium">{booking.num_adult_seats} {dict("adults")}</div>
-                        {booking.extra_child_seats.length > 0 && (
+                        <div className="font-medium">{booking?.num_adult_seats} {dict("adults")}</div>
+                        {booking?.extra_child_seats?.length > 0 && (
                           <div className="text-xs text-muted-foreground">
-                            +{booking.extra_child_seats.reduce((sum, seat) => sum + seat.num_seats, 0)} {dict("childSeats")}
+                            +{booking?.extra_child_seats?.reduce((sum, seat) => sum + seat?.num_seats, 0)} {dict("childSeats")}
                           </div>
                         )}
                       </div>
@@ -468,13 +519,13 @@ export default function DriverDetails({ driverID }) {
             </Table>
           </div>
 
-          {bookings.length === 0 && (
+          {bookings?.length === 0 && (
             <div className="text-center py-8 text-muted-foreground">
               <p>{dict("noRecords")}</p>
             </div>
           )}
 
-          {bookings.length > 0 && page < numPages && (
+          {bookings?.length > 0 && page < numPages && (
             <div ref={observerTarget} className="py-8 text-center">
               {isLoadingItems && <p>Loading more...</p>}
             </div>
@@ -562,6 +613,6 @@ export default function DriverDetails({ driverID }) {
           </div>
         )}
       </div>*/}
-    </div>
+    </div >
   )
 }

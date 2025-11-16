@@ -40,7 +40,7 @@ export async function POST(request){
                 }
                 return res
             }else{
-                return NextResponse.json({ message: "error"} , {status: response.status })
+                return NextResponse.json({ message: invoices} , {status: response.status })
             }
         }catch(err){
             return NextResponse.json({ message: `Error ${err}` }, { status: 500 })

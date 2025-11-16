@@ -132,8 +132,6 @@ export default function BookingsTable({role}) {
       });
       if (response.status === 200) {
         const bookingsObject = await response.json();
-        console.log(`page = ${page}`)
-        console.log(bookingsObject.results)
        // console.log(Math.ceil(bookingsObject.count / pageSize))
         setBookings(bookingsObject.results);      
         setIsLoading(false);
@@ -166,8 +164,7 @@ export default function BookingsTable({role}) {
       });
       if (response.status === 200) {
         const bookingsObject = await response.json();
-        console.log(`page = ${page}`)
-        console.log(bookingsObject.results)
+        
        // console.log(Math.ceil(bookingsObject.count / pageSize))
         setBookings(prev => [
           ...prev,
@@ -315,8 +312,8 @@ export default function BookingsTable({role}) {
   if (isLoading) return <Loading />
 
   return (
-    <div className='mx-5 lg:mx-23 mb-22 mt-1'>
-      <div className='w-full flex-col md:flex-row min-h-15 h-max relative flex md:justify-between items-center mb-5 gap-5'>
+    <div className='mx-5 lg:mx-23 mb-22'>
+      <div className='sticky top-13 bg-white z-20 py-7 border-b border-stone-200 left-0 w-full flex-col md:flex-row min-h-15 h-max flex md:justify-between items-center mb-3 gap-5'>
         <div className='flex flex-row gap-2 items-center'>
           <SlidersHorizontal />
           <Select value={filtering.status} onValueChange={handleStatusChange} className={cn("h-5 p-1")} >

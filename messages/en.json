@@ -179,7 +179,8 @@
     "extraInfo": "Extra Information", 
     "name": "Name",
     "orderId": "Order ID", 
-    "exbooking":"Ex-Booking"
+    "exbooking":"Ex-Booking",
+    "display_price" : "Display price"
   },
   "table": {
     "all": "All",
@@ -300,7 +301,8 @@
     "change_payment": "Mark as paid",
     "mark_unpaid": "Mark as unpaid",
     "add_note": "Add note",
-    "display_price" : "Display price"
+    "display_price" : "Display price",
+    "date":"Date"
   },
   "xmlUpload": {
     "title": "Upload XML File",

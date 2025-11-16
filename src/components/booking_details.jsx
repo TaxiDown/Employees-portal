@@ -16,8 +16,8 @@ export default function BookingDetails({ bookingID, role }) {
   const [rides, setRides] = useState([]);
   const [bookingDetails, setBookingDetails] = useState([]);
   const [notFound, setNotFound] = useState(false);
-  const dict = useTranslations("pick");
-  const statusDict = useTranslations("status");
+  const rideDict = useTranslations("pick");
+  const statusrideDict = useTranslations("status");
   const [isLoading, setIsLoading] = useState(true);
   const [showRide, setShowRide] = useState("");
 
@@ -48,7 +48,6 @@ export default function BookingDetails({ bookingID, role }) {
       if (response.status === 200) {
         const detailsObject = await response.json();
         setBookingDetails(detailsObject);
-        console.log(detailsObject);
       } else if (response.status === 401)
         router.push('/unauthorized');
       else if (response.status === 404)
@@ -119,17 +118,17 @@ export default function BookingDetails({ bookingID, role }) {
         <RideDetails role={role} rideData={showRide} setShowRide={setShowRide} />
       }
       <h1 className='font-medium text-2xl my-3'>
-        {dict("booking")} #{bookingDetails.booking_number}
+        {rideDict("booking")} #{bookingDetails.booking_number}
       </h1>
       
       {bookingDetails.booking_number_ex &&
       <h2 className='font-medium text-xl my-3 text-neutral-700'>
-        {dict("exbooking")} #{bookingDetails.booking_number_ex}
+        {rideDict("exbooking")} #{bookingDetails.booking_number_ex}
       </h2>
       }
       <div className='flex flex-col lg:flex-row gap-5 justify-between'>
         <div className='flex flex-col gap-3 w-[80%]'>
-          <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("tripDetails")}</h2>
+          <h2 className='font-medium text-lg my-1 text-neutral-500'>{rideDict("tripDetails")}</h2>
           <div className="flex gap-4 w-100 max-w-[90%] ">
             <div className="flex flex-col items-center pt-2">
               {bookingDetails.dropoff_location ? (
@@ -145,15 +144,15 @@ export default function BookingDetails({ bookingID, role }) {
             <div className="flex flex-col h-full gap-4">
               <div className="flex items-center space-x-3">
                 <div>
-                  <p className="font-medium">{dict("pickupLocation")}</p>
-                  <p className="text-gray-600">{bookingDetails.pickup_location || dict("notProvided")}</p>
+                  <p className="font-medium">{rideDict("pickupLocation")}</p>
+                  <p className="text-gray-600">{bookingDetails.pickup_location || rideDict("notProvided")}</p>
                 </div>
               </div>
               {bookingDetails.dropoff_location &&
                 <div className="flex items-center space-x-3">
                   <div>
-                    <p className="font-medium">{dict("destination")}</p>
-                    <p className="text-gray-600">{bookingDetails.dropoff_location || dict("notProvided")}</p>
+                    <p className="font-medium">{rideDict("destination")}</p>
+                    <p className="text-gray-600">{bookingDetails.dropoff_location || rideDict("notProvided")}</p>
                   </div>
                 </div>
               }
@@ -163,7 +162,7 @@ export default function BookingDetails({ bookingID, role }) {
           <div className="flex items-center space-x-3">
             <Calendar className="w-5 h-5 text-orange-500" />
             <div>
-              <p className="font-medium">{dict("pickTime")}</p>
+              <p className="font-medium">{rideDict("pickTime")}</p>
               <p className="text-gray-600">{bookingDetails.datetime_pickup.split("T")[0]}{'\u00A0'}{'\u00A0'}{'\u00A0'}{bookingDetails.datetime_pickup.split("T")[1]}</p>
             </div>
           </div>
@@ -172,8 +171,8 @@ export default function BookingDetails({ bookingID, role }) {
             <div className="flex items-center space-x-3">
               <Timer className="w-6 h-6 text-orange-500" />
               <div>
-                <p className="font-medium">{dict("duration")}</p>
-                <p className="text-gray-600">{bookingDetails.duration} {bookingDetails.duration == 1 ? dict("hour") : dict("hours")}</p>
+                <p className="font-medium">{rideDict("duration")}</p>
+                <p className="text-gray-600">{bookingDetails.duration} {bookingDetails.duration == 1 ? rideDict("hour") : rideDict("hours")}</p>
               </div>
             </div>
           }
@@ -182,7 +181,7 @@ export default function BookingDetails({ bookingID, role }) {
             <div className="flex items-center space-x-3">
               <Calendar className="w-5 h-5 text-orange-500" />
               <div>
-                <p className="font-medium">{dict("returnTime")}</p>
+                <p className="font-medium">{rideDict("returnTime")}</p>
                 <p className="text-gray-600">{bookingDetails.datetime_return.split("T")[0]}{'\u00A0'}{'\u00A0'}{'\u00A0'}{bookingDetails.datetime_return.split("T")[1]}</p>
               </div>
             </div>
@@ -193,7 +192,7 @@ export default function BookingDetails({ bookingID, role }) {
                 <MessageCircleMore strokeWidth={2.3} size={22} className="text-orange-500" />
               </div>
               <div>
-                <p className="font-medium"> {dict("comments")}</p>
+                <p className="font-medium"> {rideDict("comments")}</p>
                 <p className="text-gray-600">{bookingDetails.customer_note}</p>
               </div>
             </div>
@@ -202,7 +201,7 @@ export default function BookingDetails({ bookingID, role }) {
 
         <div className='flex flex-col gap-7 '>
           <div className='flex flex-col gap-1'>
-            <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("contactInfo")}</h2>
+            <h2 className='font-medium text-lg my-1 text-neutral-500'>{rideDict("contactInfo")}</h2>
             {bookingDetails.email &&
               <a href={`mailto:${bookingDetails.email}`} className='flex items-center gap-2 text-lg hover:text-orange-600 '>
                 <Mail size={17} />
@@ -218,20 +217,20 @@ export default function BookingDetails({ bookingID, role }) {
           </div>
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-500">
-              {dict("seatingRequirements")}
+              {rideDict("seatingRequirements")}
             </h3>
 
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <span className="text-sm text-foreground">
-                  {dict("adultSeats")}: <span className="font-medium">{bookingDetails.num_adult_seats}</span>
+                  {rideDict("adultSeats")}: <span className="font-medium">{bookingDetails.num_adult_seats}</span>
                 </span>
               </div>
 
               {bookingDetails.extra_child_seats.map((childSeat, index) => (
                 <div key={index} className="flex items-center gap-3">
                   <span className="text-sm text-foreground">
-                    {childSeat.seat_type}: <span className="font-medium ml-1">{childSeat.num_seats} {dict("seats")}</span>
+                    {childSeat.seat_type}: <span className="font-medium ml-1">{childSeat.num_seats} {rideDict("seats")}</span>
                   </span>
                 </div>
               ))}
@@ -239,15 +238,15 @@ export default function BookingDetails({ bookingID, role }) {
           </div>
           {bookingDetails.extra_info &&
           <div className='flex flex-col gap-1'>
-            <h2 className='font-medium text-lg my-1 text-neutral-500'>{dict("extraInfo")}</h2>
+            <h2 className='font-medium text-lg my-1 text-neutral-500'>{rideDict("extraInfo")}</h2>
             {bookingDetails?.extra_info["CustomerName"] &&
               <div className='flex items-center gap-2 '>
-                {dict("name")}: {bookingDetails.extra_info["CustomerName"]}
+                {rideDict("name")}: {bookingDetails.extra_info["CustomerName"]}
               </div>
             }
             {bookingDetails?.extra_info["OrderID"] &&
               <div className='flex items-center gap-2'>
-                {dict("orderId")}: {bookingDetails.extra_info["OrderID"]}
+                {rideDict("orderId")}: {bookingDetails.extra_info["OrderID"]}
               </div>
             }
           </div>
@@ -259,7 +258,7 @@ export default function BookingDetails({ bookingID, role }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-2 mt-5">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-600">
-              {dict("service")}
+              {rideDict("service")}
               <Badge variant="outline" className='text-orange-700'>{bookingDetails.services.service}</Badge>
             </h3>
             <div>
@@ -277,15 +276,15 @@ export default function BookingDetails({ bookingID, role }) {
 
       <div>
         <div className="overflow-x-auto mt-3 ">
-          <h2 className='font-medium text-lg my-2 text-neutral-600'>{dict("bookingRides")}</h2>
+          <h2 className='font-medium text-lg my-2 text-neutral-600'>{rideDict("bookingRides")}</h2>
 
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="font-semibold">{dict("rideId")}</TableHead>
-                <TableHead className="font-semibold">{dict("status")}</TableHead>
-                <TableHead className="font-semibold">{dict("returnRide")}</TableHead>
-                <TableHead className="font-semibold">{dict("driver")}</TableHead>
+                <TableHead className="font-semibold">{rideDict("rideId")}</TableHead>
+                <TableHead className="font-semibold">{rideDict("status")}</TableHead>
+                <TableHead className="font-semibold">{rideDict("returnRide")}</TableHead>
+                <TableHead className="font-semibold">{rideDict("driver")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -297,7 +296,7 @@ export default function BookingDetails({ bookingID, role }) {
 
                   <TableCell>
                     <Badge variant={getStatusVariant(booking.status)} className={getColor(booking.status)}>
-                      {statusDict(booking.status.toLowerCase()) || booking.status}                    </Badge>
+                      {statusrideDict(booking.status.toLowerCase()) || booking.status}                    </Badge>
                   </TableCell>
 
                   <TableCell className="space-y-1">
@@ -311,7 +310,7 @@ export default function BookingDetails({ bookingID, role }) {
                     </TableCell>
                     :
                     <TableCell className="space-y-1">
-                      {dict("unassigned")}
+                      {rideDict("unassigned")}
                     </TableCell>
                   }
                 </TableRow>
@@ -322,7 +321,7 @@ export default function BookingDetails({ bookingID, role }) {
 
         {rides.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            <p>{dict("noRecords")}</p>
+            <p>{rideDict("noRecords")}</p>
           </div>
         )}
       </div>
