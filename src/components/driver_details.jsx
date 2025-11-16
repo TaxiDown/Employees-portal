@@ -413,7 +413,7 @@ export default function DriverDetails({ driverID }) {
                         <TableCell className="space-y-1">
                           <div className="flex items-start gap-2">
                             <div className="text-sm ">
-                              {ride?.return_ride ? (
+                              {ride?.dropoff_location ? (
                                 <div title={ride?.dropoff_location}>{formatLocation(ride?.dropoff_location)}</div>
                               ) :
                                 <div>{"null"}</div>}
