@@ -5,206 +5,280 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react'
 import NotFound from './not_found';
 import { useTranslations } from 'next-intl';
-import { Mail, Phone, Calendar } from 'lucide-react';
-import { MapPin, Clock, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import RideDetails from './ride_details';
-import { BadgeCheck, BadgeX } from 'lucide-react';
 import Loading from './loading';
-import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { FilePlusIcon } from 'lucide-react';
-import { DateRangeFilter } from './date_filter';
 import InvoiceDetails from './invoice_details';
-import GenerateInvoiceForm from './generate_invoice';
+import { Search } from 'lucide-react';
+import { DateRangeFilter } from './date_filter';
 
-export default function Invoices() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [invoices, setInvoices] = useState("");
-  
-  const router = useRouter();
-  const pageSize = 10;
-  const [driverDetails, setDriverDetails] = useState([]);
-  const [page, setPage] = useState(1);
-  const [notFound, setNotFound] = useState(false);
-  const invoiceDict = useTranslations("invoice");
-  const dict = useTranslations("table");
-  const driver = useTranslations("driver");
-  const rideDict = useTranslations("pick");
+export default function Invoices({ role }) {
+    const [invoices, setInvoices] = useState("");
 
-  const [isLoading, setIsLoading] = useState(true);
+    const router = useRouter();
+    const pageSize = 25;
+    const [driverDetails, setDriverDetails] = useState([]);
+    const [page, setPage] = useState(1);
+    const [notFound, setNotFound] = useState(false);
+    const invoiceDict = useTranslations("invoice");
+    const dict = useTranslations("table");
+    const driver = useTranslations("driver");
+    const rideDict = useTranslations("pick");
 
-  const [numPages, setNumPages] = useState(0);
-  const observerTarget = useRef(null);
-  const [isLoadingItems, setIsLoadingItems] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
-  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
-  const [invoice, setInvoice] = useState("");
-  const [invoiceDetails, setInvoicedetails] = useState("")
+    const [numPages, setNumPages] = useState(0);
+    const observerTarget = useRef(null);
+    const [isLoadingItems, setIsLoadingItems] = useState(false);
 
-  const getInvoices = async (e) => {
-    const response = await fetch(`/api/get_invoices?page_size=100`, {
-      method: 'GET',
-      Credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-    if (response.status === 200) {
-      setIsLoading(false);
-      const detailsObject = await response.json();
-      console.log(detailsObject.results);
-      setInvoices(detailsObject.results);
-    } else if (response.status === 401)
-      router.push('/unauthorized');
-    else if (response.status === 404)
-      setNotFound(true);
-  }
+    const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+    const [invoiceDetails, setInvoicedetails] = useState("");
 
-  const getInvoice = async (driverID, invoiceID) => {
-    const response = await fetch(`/api/get_driver_details/${driverID}/get_invoices/${invoiceID}`, {
-      method: 'GET',
-      Credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-    if (response.status === 200) {
+    const [count, setCount] = useState(0);
+    const [pageAdded, setPageAdded] = useState(0);
 
-      const detailsObject = await response.json();
-      setInvoicedetails(detailsObject);
-      setIsInvoiceOpen(true);
-    } else if (response.status === 401)
-      router.push('/unauthorized');
-    else if (response.status === 404)
-      setNotFound(true);
-  }
-
-  const formatDateTime = (dt) =>
-    new Date(dt).toLocaleString("en-US", {
-      year: "numeric", month: "short", day: "numeric",
-      hour: "2-digit", minute: "2-digit",
+    const [searchQuery, setSearchQuery] = useState(() => {
+        if (typeof window !== "undefined") {
+            return sessionStorage.getItem("searchQuery") || "";
+        }
+        return "";
     });
 
-
-  useEffect(() => {
-    if (page === 1) return;
-    getbookings();
-  }, [page])
-
-  useEffect(() => {
-    getInvoices();
-  }, []);
-
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isLoadingItems) {
-          setIsLoadingItems(true);
-          loadMoreItems();
+    const [startDate, setStartDate] = useState(() => {
+        if (typeof window !== "undefined") {
+            const stored = sessionStorage.getItem("startDate");
+            return stored ? new Date(stored) : null;   // ✅ convert to Date
         }
-      },
-      { threshold: 0.1 }
-    );
+        return null;
+    });
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
+    const [endDate, setEndDate] = useState(() => {
+        if (typeof window !== "undefined") {
+            const stored = sessionStorage.getItem("endDate");
+            return stored ? new Date(stored) : null;   // ✅ convert to Date
+        }
+        return null;
+    });
+
+    const getInvoices = async (e) => {
+        if (page === pageAdded) return;
+        const response = await fetch(`/api/get_invoices?page_size=${pageSize}&page=${page}${searchQuery ? `&search=${searchQuery}` : ''}${startDate ? `&from_date=${startDate}` : ''}${endDate ? `&to_date=${endDate}` : ''}`, {
+            method: 'GET',
+            Credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        if (response.status === 200) {
+            setIsLoading(false);
+            const detailsObject = await response.json();
+            setPageAdded(page);
+            if (page === 1)
+                setInvoices(detailsObject.results);
+            else {
+                setInvoices(prev => [
+                    ...prev,
+                    ...detailsObject.results
+                ]);
+            }
+            const max = Math.ceil(detailsObject.count / pageSize);
+            setNumPages(max);
+            setCount(detailsObject.count);
+            setIsLoadingItems(false);
+        } else if (response.status === 401)
+            router.push('/unauthorized');
+        else if (response.status === 404)
+            setNotFound(true);
     }
 
-    return () => observer.disconnect();
-  });
+    const getInvoicesFilter = async (e) => {
+        setInvoices("")
+        const response = await fetch(`/api/get_invoices?page_size=${pageSize}&${searchQuery ? `&search=${searchQuery}` : ''}${startDate ? `&from_date=${startDate}` : ''}${endDate ? `&to_date=${endDate}` : ''}`, {
+            method: 'GET',
+            Credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        if (response.status === 200) {
+            setIsLoading(false);
+            const detailsObject = await response.json();
+            console.log(page, pageAdded)
+            setInvoices(detailsObject.results);
+            setCount(detailsObject.count);
+            setIsLoadingItems(false);
+        } else if (response.status === 401)
+            router.push('/unauthorized');
+        
+    }
 
-  const loadMoreItems = () => {
-    if (page < numPages) setPage(page + 1);
-  };
+    const getInvoice = async (driverID, invoiceID) => {
+        const response = await fetch(`/api/get_driver_details/${driverID}/get_invoices/${invoiceID}`, {
+            method: 'GET',
+            Credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+        if (response.status === 200) {
 
-  if (notFound)
-    return <NotFound />
+            const detailsObject = await response.json();
+            setInvoicedetails(detailsObject);
+            setIsInvoiceOpen(true);
 
-  if (isLoading)
-    return <Loading />
+        } else if (response.status === 401)
+            router.push('/unauthorized');
+        else if (response.status === 404)
+            setNotFound(true);
+    }
 
-  return (
-    <div className='mt-20 relative w-full min-h-screen h-max px-12  mb-10 lg:w-[70%]'>
+    const formatDateTime = (dt) =>
+        new Date(dt).toLocaleString("en-US", {
+            year: "numeric", month: "short", day: "numeric",
+            hour: "2-digit", minute: "2-digit",
+        });
 
-      {
-        driverDetails?.services?.service &&
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-2 mt-5">
-            <h3 className="text-lg font-semibold text-foreground flex items-center gap-2 text-neutral-600">
-              {driver("service")}
-              <Badge variant="outline" className='text-orange-700'>{driverDetails?.services?.service}</Badge>
-            </h3>
-          </div>
-        </div>
-      }
 
-      <div className="overflow-x-auto mt-1 ">
-        <h2 className='font-medium text-xl my-2 text-black border-b border-neutral-200 pb-5'>{invoiceDict("invoices")} <Badge className="text-base rounded-full px-2 text-sm bg-neutral-200 text-neutral-700">{invoices?.length}</Badge>
-        </h2>
+    useEffect(() => {
+        getInvoices();
+    }, [page]);
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="font-semibold">{invoiceDict("invoice_number")}</TableHead>
-              <TableHead className="font-semibold">{invoiceDict("driver")}</TableHead>
-              <TableHead className="font-semibold">{invoiceDict("status")}</TableHead>
-              <TableHead className="font-semibold">{invoiceDict("total_amount")}</TableHead>
-              <TableHead className="font-semibold">{invoiceDict("amount_paid")}</TableHead>
-              <TableHead className="font-semibold">{invoiceDict("datePaid")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {invoices.length > 0 && invoices?.map((invoice) => (
-              <TableRow key={invoice?.id} className="hover:bg-muted/50">
+    useEffect(() => {
+        getInvoicesFilter();
+    }, [searchQuery, startDate,endDate]);
 
-                <TableCell className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700" onClick={()=>getInvoice(invoice.driver.id, invoice.id)}>
-                    {invoice?.invoice_number}
-                </TableCell>
 
-                <TableCell className="space-y-1">
-                  {invoice?.driver?.first_name} {invoice?.driver?.last_name}
-                </TableCell>
+    useEffect(() => {
+        sessionStorage.setItem("searchQuery", searchQuery);
+    }, [searchQuery]);
 
-                <TableCell className="space-y-1">
-                  {invoice?.status}
-                </TableCell>
+    useEffect(() => {
+        sessionStorage.setItem("startDate", startDate ?? "");
+        sessionStorage.setItem("endDate", endDate ?? "");
+    }, [startDate, endDate]);
 
-                <TableCell className="space-y-1">
-                  {String(invoice?.total_amount)}
-                </TableCell>
 
-                <TableCell className="space-y-1">
-                  {String(invoice?.amount_paid)}
-                </TableCell>
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !isLoadingItems) {
+                    setIsLoadingItems(true);
+                    loadMoreItems();
+                }
+            },
+            { threshold: 0.1 }
+        );
 
-                <TableCell className="space-y-1">
-                  <div className="flex items-start gap-2">
-                    <div className="text-sm text-muted-foreground">
-                      <div className="font-medium">{invoice?.datetime_paid ? formatDateTime(invoice?.datetime_paid): "null"}</div>
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => observer.disconnect();
+    });
+
+    const loadMoreItems = () => {
+        if (page < numPages) setPage(page + 1);
+    };
+
+    if (notFound)
+        return <NotFound />
+
+    if (isLoading)
+        return <Loading />
+
+    return (
+        <div className='mt-20 relative w-full min-h-screen h-max px-12  mb-10 lg:w-[70%]'>
+
+
+            <div className='sticky top-10 bg-white z-20 pt-8 pb-5 border-b border-stone-200 left-0 w-full flex-col md:flex-row min-h-15 h-max flex md:justify-between items-center mb-3 gap-5'>
+
+                <h2 className='font-medium text-xl my-2 text-black pb-5'>
+                    {invoiceDict("invoices")} <Badge className="text-base rounded-full px-2 text-sm bg-neutral-200 text-neutral-700">{count}</Badge>
+                </h2>
+                <div className='relative w-max'>
+                    <input
+                        className='w-90 max-w-[90%] h-5 p-5 rounded-full border border-neutral-400 focus:border-neutral-600 valid:border-neutral-600 outline-none'
+                        placeholder={dict("searchBooking")}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        value={searchQuery}
+                        required
+                    />
+                    <Search className='absolute top-2 right-12 text-neutral-500' />
+                </div>
+
+                {role === "Super fleet manager" &&
+                    <DateRangeFilter setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
+                }
+
+
+            </div>
+
+            <div className="overflow-x-auto mt-1 ">
+
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="font-semibold">{invoiceDict("invoice_number")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("driver")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("status")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("total_amount")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("amount_paid")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("datePaid")}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {invoices.length > 0 && invoices?.map((invoice) => (
+                            <TableRow key={invoice?.id} className="hover:bg-muted/50">
+
+                                <TableCell className="font-medium hover:text-orange-500 cursor-pointer active:text-orange-700" onClick={() => getInvoice(invoice.driver.id, invoice.id)}>
+                                    {invoice?.invoice_number}
+                                </TableCell>
+
+                                <TableCell className="space-y-1">
+                                    {invoice?.driver?.first_name} {invoice?.driver?.last_name}
+                                </TableCell>
+
+                                <TableCell className="space-y-1">
+                                    {invoice?.status}
+                                </TableCell>
+
+                                <TableCell className="space-y-1">
+                                    {String(invoice?.total_amount)}
+                                </TableCell>
+
+                                <TableCell className="space-y-1">
+                                    {String(invoice?.amount_paid)}
+                                </TableCell>
+
+                                <TableCell className="space-y-1">
+                                    <div className="flex items-start gap-2">
+                                        <div className="text-sm text-muted-foreground">
+                                            <div className="font-medium">{invoice?.datetime_paid ? formatDateTime(invoice?.datetime_paid) : "null"}</div>
+                                        </div>
+                                    </div>
+                                </TableCell>
+
+
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                {invoices.length > 0 && page < numPages && (
+                    <div ref={observerTarget} className="py-8 text-center">
+                        {isLoadingItems && <p>{dict("loading_more")}...</p>}
                     </div>
-                  </div>
-                </TableCell>
+                )}
+            </div>
 
+            <InvoiceDetails
+                isOpen={isInvoiceOpen}
+                setIsOpen={setIsInvoiceOpen}
+                invoice={invoiceDetails}
+                dict={dict}
+                rideDict={rideDict}
+                create={false}
+            />
+        </div >
 
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      <InvoiceDetails
-            isOpen={isInvoiceOpen}
-            setIsOpen={setIsInvoiceOpen}
-            invoice={invoiceDetails}
-            dict={dict}
-            rideDict={rideDict}
-            create={false}
-        />
-    </div >
-
-  )
+    )
 }

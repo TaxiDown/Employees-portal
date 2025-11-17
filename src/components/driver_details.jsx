@@ -23,8 +23,7 @@ export default function DriverDetails({ driverID }) {
   const [notFound, setNotFound] = useState(false);
   const dict = useTranslations("table");
   const driver = useTranslations("driver");
-  const rideDict = useTranslations("pick");
-  const statusrideDict = useTranslations("status");
+
 
   const [isLoading, setIsLoading] = useState(true);
   const [showRide, setShowRide] = useState("");
@@ -149,7 +148,7 @@ export default function DriverDetails({ driverID }) {
           </h1>
 
           <button onClick={() => router.push(`/drivers/${driverID}/driver_invoices`)} className='flex gap-1 items-center items-center text-lg text-orange-500 hover:text-orange-700 cursor-pointer font-semibold'>
-            <StickyNote className="" size={20} strokeWidth={2} />Invoices</button>
+            <StickyNote className="" size={20} strokeWidth={2} />{driver("invoices")}</button>
 
         </div>
         <div className='flex flex-col lg:flex-row gap-5 justify-between'>
@@ -271,7 +270,7 @@ export default function DriverDetails({ driverID }) {
 
           {bookings?.length > 0 && page < numPages && (
             <div ref={observerTarget} className="py-8 text-center">
-              {isLoadingItems && <p>Loading more...</p>}
+              {isLoadingItems && <p>{dict("loading_more")}...</p>}
             </div>
           )}
         </div>

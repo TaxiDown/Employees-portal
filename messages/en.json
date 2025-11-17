@@ -193,7 +193,7 @@
     "returnBooking": "Return Booking",
     "oneWay": "One Way",
     "filterByStatus": "Filter by status",
-    "searchBooking": "Search with booking number",
+    "searchBooking": "Search",
     "bookingNumber": "Booking Number",
     "type": "Type",
     "status": "Status",
@@ -205,7 +205,7 @@
     "noContact": "No contact info",
     "adults": "Adults",
     "childSeats": "Child seats",
-    "noRecords": "No booking records found.",
+    "noRecords": "No records found.",
     "showing": "Showing",
     "to": "to",
     "of": "of",
@@ -218,7 +218,8 @@
     "unpaid": "Unpaid",
     "payment_status":"Payment Status",
     "price":"Price",
-    "filter":"Filter"
+    "filter":"Filter",
+    "loading_more": "Loading more"
   },
   "dateFilter": {
     "next90": "Next 90 days",
@@ -249,7 +250,8 @@
     "returnRide": "Return ride",
     "driver": "Driver",
     "unassigned": "Unassigned",
-    "noRecords": "No booking records found."
+    "noRecords": "No booking records found.",
+    "invoices":"Invoices"
   },
   "status": {
     "pending": "Pending",
@@ -303,7 +305,10 @@
     "mark_unpaid": "Mark as unpaid",
     "add_note": "Add note",
     "display_price" : "Display price",
-    "date":"Date"
+    "date":"Date",
+    "notes": "Notes", 
+    "select_status": "Select a status",
+    "status": "Status"
   },
   "xmlUpload": {
     "title": "Upload XML File",
@@ -345,6 +350,11 @@
     "status": "Status",
     "datePaid" : "Date Paid",
     "driver": "Driver",
-    "invoices": "Invoices"
+    "invoices": "Invoices",
+    "invoice": "Invoice",
+    "generate": "Generate",
+    "invoice_saved": "Invoice saved",
+    "create_invoice": "Create Invoice",
+    "generate_invoice": "Generate Invoice"
   }
 }

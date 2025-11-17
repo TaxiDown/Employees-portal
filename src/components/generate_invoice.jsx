@@ -7,6 +7,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { DateRangeFilter } from "./date_filter";
 import { GenerateInvoice } from "@/app/actions/generate_invoice";
 import InvoiceDetails from "./invoice_details";
+import { InvoiceDateRangeFilter } from "./invoice_date_filter";
+import { useTranslations } from "next-intl";
 
 export default function GenerateInvoiceForm({
     isOpen,
@@ -21,6 +23,7 @@ export default function GenerateInvoiceForm({
     const [openDrop, setOpenDrop] = useState(false);
     const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
     const [invoice, setInvoice] = useState("");
+    const invoicesDict = useTranslations("invoice")
 
     const handleGenerate = async () => {
         const response = await GenerateInvoice(driverID, startDate, endDate, status, true)
@@ -36,12 +39,12 @@ export default function GenerateInvoiceForm({
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent className="max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="text-balance">Invoice</DialogTitle>
+                    <DialogTitle className="text-balance">{invoicesDict("invoice")}</DialogTitle>
                 </DialogHeader>
                 <div className='mx-2 mt-2 flex flex-col'>
                     <div className='flex gap-2 relative'>
                         <p className="text-sm text-gray-500 mb-1">{dict("filter")}</p>
-                        <DateRangeFilter className="absolute top-50" setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
+                        <InvoiceDateRangeFilter className="absolute top-50" setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
                     </div>
                     <div className='mt-3 flex gap-2'>
                         <p className="text-sm text-gray-500">{dict("payment_status")}</p>
@@ -62,7 +65,7 @@ export default function GenerateInvoiceForm({
 
                 </div>
                 <div className='flex justify-center'>
-                    <button className='bg-orange-500 hover:bg-orange-600 rounded-full px-3 py-1' onClick={handleGenerate}> Generate</button>
+                    <button className='bg-orange-500 hover:bg-orange-600 rounded-full px-3 py-1' onClick={handleGenerate}> {invoicesDict("generate")}</button>
                 </div>
             </DialogContent>
         </Dialog>

@@ -16,10 +16,18 @@ import { Trash } from "lucide-react"
 import { SquarePen } from "lucide-react"
 import Cookies from 'js-cookie'
 
+
+
 export default function RideDetails({ rideData, setShowRide, role }) {
   const router = useRouter()
   const dict = useTranslations("ride");
   const statusDict = useTranslations("status");
+  const [updatedStatus, setUpdatedStatus] = useState('');
+  const [status, setStatus] = useState("");
+  const [newStatus, setNewStatus] = useState("");
+
+  const [statusID, setStatusID] = useState("");
+  const [newStatusID, setNewStatusID] = useState("");
 
   const [isPaid, setIsPaid] = useState(rideData.flg_paid);
 
@@ -33,6 +41,9 @@ export default function RideDetails({ rideData, setShowRide, role }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [drivers, setDrivers] = useState([])
   const [statusOptions, setStatusOptions] = useState([])
+
+  const [noteStatusOptions, setNoteStatusOptions] = useState([])
+
   const [reload, setReload] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -170,6 +181,25 @@ export default function RideDetails({ rideData, setShowRide, role }) {
     getdrivers()
   }, [searchQuery])
 
+
+  useEffect(() => {
+    const getStatuses = async () => {
+      const response = await fetch(`/api/get_statuses`, {
+        method: "GET",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+      })
+      if (response.status === 200) {
+        const responseObject = await response.json()
+        console.log(responseObject)
+        setNoteStatusOptions(responseObject.results)
+      } else if (response.status === 401) {
+        router.push("/unauthorized")
+      }
+    }
+    getStatuses()
+  }, [])
+
   const [comment, setComment] = useState("")
   const textareaRef = useRef(null);
 
@@ -187,7 +217,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ note: comment }),
+      body: JSON.stringify({ note: comment, status: statusID }),
     })
     if (response.status === 201) {
       const newNote = await response.json()
@@ -200,6 +230,8 @@ export default function RideDetails({ rideData, setShowRide, role }) {
         ]
       }));
       setComment("");
+      setStatusID("");
+      setStatus("")
     }
   }
 
@@ -209,7 +241,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ note: updatedNote }),
+      body: JSON.stringify({ note: updatedNote , status: newStatusID}),
     })
     if (response.status === 200) {
       const newNote = await response.json()
@@ -224,6 +256,8 @@ export default function RideDetails({ rideData, setShowRide, role }) {
       }));
       setUpdatedNote("");
       setNoteChange("")
+      setNewStatus("");
+      setNewStatusID("")
     }
     setUpdatedNote("");
   }
@@ -249,7 +283,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
 
   return (
     <div className="fixed top-0 left-0 z-50 w-screen h-screen bg-black/20 backdrop-blur-xs flex items-center justify-center">
-      <div className="w-[80%] lg:w-[50%] h-160 md:h-150 bg-white rounded-xl relative px-10 pt-10 md:p-20 md:pb-10 overflow-y-auto">
+      <div className="w-[80%] lg:w-[50%] h-160 md:h-150 bg-white rounded-xl relative px-10 pt-10 md:p-20 md:pb-1 overflow-y-auto">
         <X
           size={27}
           className="absolute top-7 right-7 cursor-pointer"
@@ -268,7 +302,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Badge className={`px-3 py-1 rounded-full font-medium ${getStatusColor(currentStatus)}`}>
+            <Badge className={`px-3 py-1 rounded-full font-medium bg-gray-200 text-gray-800`}>
               {statusDict(currentStatus.toLowerCase()) || booking.status}
             </Badge>
             {statusOptions.length > 0 && (
@@ -277,8 +311,8 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {statusOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
+                  {statusOptions.map((option, index) => (
+                    <SelectItem key={index} value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))}
@@ -376,7 +410,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                         <DialogDescription>{dict("select_driver")}</DialogDescription>
                       </DialogHeader>
                       <div className="flex items-center justify-center">
-                        <button className="text-white bg-gray-500 px-3 py-1 rounded-md cursor-pointer hover:bg-red-800" onClick={()=>handleDriverAssignment(null)}>Remove driver</button>
+                        <button className="text-white bg-gray-500 px-3 py-1 rounded-md cursor-pointer hover:bg-red-800" onClick={() => handleDriverAssignment(null)}>Remove driver</button>
                       </div>
 
                       <div className="space-y-2  flex flex-col items-center">
@@ -458,46 +492,78 @@ export default function RideDetails({ rideData, setShowRide, role }) {
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
               <MessageCircleMore className="h-5 w-5" />
-              <h2 className="text-lg font-semibold">Notes</h2>
+              <h2 className="text-lg font-semibold">{dict("notes")}</h2>
 
             </div>
 
-            <div className="space-y-3 max-h-45 overflow-x-auto">
+            <div className="space-y-3 max-h-60 overflow-x-auto">
               {ride.employees_notes.map((note, index) => (
                 <div key={index}>
-                  {noteChange !== note.id ? 
-                  <div id={note.id} className="bg-gray-100 rounded-lg p-4 border border-gray-200">
-                    <div className="flex gap-2 items-center justify-between mb-1">
-                      <div className="flex gap-2">
-                        <h3 className="font-semibold text-gray-900 mb-1">
-                          {note?.employee?.first_name} {note?.employee?.last_name}
-                        </h3>
-                        <div>
-                          <Badge className={"text-xs text-gray-500"} variant="outline">{note.updated && "Updated"} {note.timestamp}</Badge>
-                        </div>
-                      </div>
-                      {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black"/> : id == note?.employee?.id &&
+                  {noteChange !== note.id ?
+                    <div id={note.id} className="bg-gray-100 rounded-lg p-4 border border-gray-200">
+                      <div className="flex gap-2 items-center justify-between mb-1">
                         <div className="flex gap-2">
-                          <button className="cursor-pointer" onClick={() => {setUpdatedNote(note.note); setNoteChange(note.id);}}><SquarePen className={" text-orange-500 hover:text-orange-700 "}  size={17} strokeWidth={2.5}/></button>
-                          <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={17} strokeWidth={2.5}/></button>
-                        </div>}
+                          <h3 className="font-semibold text-gray-900 mb-1">
+                            {note?.employee?.first_name} {note?.employee?.last_name}
+                          </h3>
+                          <div>
+                            <Badge className={"text-xs text-gray-500"} variant="outline">{note.updated && "Updated"} {note.timestamp}</Badge>
+                          </div>
+                        </div>
+                        {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black" /> : id == note?.employee?.id &&
+                          <div className="flex gap-2">
+                            <button className="cursor-pointer" onClick={() => { setUpdatedNote(note.note); setNoteChange(note.id); }}><SquarePen className={" text-orange-500 hover:text-orange-700 "} size={17} strokeWidth={2.5} /></button>
+                            <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={17} strokeWidth={2.5} /></button>
+                          </div>}
+                      </div>
+                      {note?.status && (
+                        <div className="mb-3 flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Status:</span>
+                          <Badge className={`text-xs font-semibold px-3 py-1 bg-gray-200 text-gray-800`}>
+                            {note.status}
+                          </Badge>
+                        </div>
+                      )}
+                      <p className="text-gray-700 text-sm">{note.note}</p>
+                    </div> :
+                    <div className="bg-gray-100 rounded-lg p-4 border border-gray-200 flex flex-col gap-4">
+                      <div className="flex gap-3">
+  <label className="text-md font-medium text-stone-600 tracking-wide">
+    {dict("status")}
+  </label>
+
+  <select
+    value={newStatus}
+    onChange={(e) => {
+      setNewStatus(e.target.value);
+      setNewStatusID(e.target.selectedOptions[0].id);
+    }}
+    className="border border-gray-300 h-8 rounded-lg px-3 w-full bg-white text-gray-900 text-sm focus:outline-none"
+  >
+    <option value="">{dict("select_status")}</option>
+
+    {noteStatusOptions.length > 0 &&
+      noteStatusOptions.map((status) => (
+        <option key={status.id} id={status.id} value={status.status}>
+          {status.status}
+        </option>
+      ))}
+  </select>
+</div>
+
+                      <Textarea
+                        id="updatedNote"
+                        className="border-none rounded-lg p-3 w-full bg-white valid:border valid:border-gray-300 focus:border focus:border-gray-300"
+                        value={updatedNote}
+                        onChange={(e) => setUpdatedNote(e.target.value)}
+                        placeholder={dict("add_note")}
+                        required
+                      />
+                      <div className="flex justify-end gap-2">
+                        <button className="cursor-pointer" onClick={() => { setNoteChange(""); setUpdatedNote(""); }}><Badge className={" bg-white text-black border-2 border-black hover:bg-black hover:text-white text-md"}>Cancel</Badge></button>
+                        <button className="cursor-pointer" onClick={() => { updateNote(note.id) }}><Badge className={" bg-green-500 border-2 border-green-500 hover:bg-green-700 hover:border-green-700 text-md "}>Save</Badge></button>
+                      </div>
                     </div>
-                    <p className="text-gray-700 text-sm">{note.note}</p>
-                  </div> :
-                  <div className="bg-gray-100 rounded-lg p-4 border border-gray-200 flex flex-col gap-2">
-                    <Textarea
-                      id="updatedNote"
-                      className="border-none rounded-lg p-3 w-full "
-                      value={updatedNote}
-                      onChange={(e)=>setUpdatedNote(e.target.value)}
-                      placeholder={dict("add_note")}
-                      required
-                    />     
-                    <div className="flex justify-end gap-2">
-                      <button className="cursor-pointer" onClick={() => {setNoteChange(""); setUpdatedNote("");}}><Badge className={" bg-white text-black border-2 border-black hover:bg-black hover:text-white text-md"}>Cancel</Badge></button>
-                      <button className="cursor-pointer" onClick={() => {updateNote(note.id)}}><Badge className={" bg-green-500 border-2 border-green-500 hover:bg-green-700 hover:border-green-700 text-md "}>Save</Badge></button>
-                    </div>
-                  </div>
                   }
                 </div>
               ))}
@@ -505,24 +571,52 @@ export default function RideDetails({ rideData, setShowRide, role }) {
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-900">Add Note</h3>
             <div className="space-y-3">
-              <Textarea
-                id="comment"
-                className="border border-gray-200 rounded-lg p-3 w-full resize-none min-h-24"
-                value={comment}
-                ref={textareaRef}
-                onChange={handleChange}
-                placeholder={dict("add_note")}
-                required
-                rows={3}
-              />
+            <div className="flex gap-3">
+  <label className="text-md font-medium text-stone-600 tracking-wide">
+    {dict("status")}
+  </label>
+
+  <select
+    value={status}
+    onChange={(e) => {
+      setStatus(e.target.value);
+      setStatusID(e.target.selectedOptions[0].id);
+    }}
+    className="border border-gray-300 h-8 rounded-lg px-3 w-full bg-white text-gray-900 text-sm focus:outline-none"
+  >
+    <option value="">{dict("select_status")}</option>
+
+    {noteStatusOptions.length > 0 &&
+      noteStatusOptions.map((status) => (
+        <option key={status.id} id={status.id} value={status.status}>
+          {status.status}
+        </option>
+      ))}
+  </select>
+</div>
+
+              <div className="flex gap-3 items-center">
+                <h3 className="font-semibold text-stone-600">{dict("notes")}</h3>
+                <Textarea
+                  id="comment"
+                  className="border border-gray-200 rounded-lg p-3 w-full resize-none min-h-24 outline-none"
+                  value={comment}
+                  ref={textareaRef}
+                  onChange={handleChange}
+                  placeholder={dict("add_note")}
+                  required
+                  rows={3}
+                />
+              </div>
+
+
               <div className="flex items-center gap-2">
                 <Button
                   onClick={handleAddNote}
                   className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg py-2"
                 >
-                  Add Note
+                  {dict("add_note")}
                 </Button>
 
               </div>

@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { GenerateInvoice } from "@/app/actions/generate_invoice";
 import { Save } from "lucide-react";
 import { BookmarkCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function InvoiceDetails({
   isOpen,
@@ -22,6 +23,9 @@ export default function InvoiceDetails({
 }) {
 
   const [saved, setSaved] = useState(false);
+
+  const invoicesDict = useTranslations("invoice")
+
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case "paid": return "bg-green-100 text-green-800";
@@ -55,7 +59,7 @@ export default function InvoiceDetails({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-h-[80vh] overflow-y-auto p-10">
         <DialogHeader className='flex flex-row justify-between mr-10'>
-          <DialogTitle className="text-balance">Invoice # {invoice?.invoice_number}</DialogTitle>
+          <DialogTitle className="text-balance">{invoicesDict("invoice")} # {invoice?.invoice_number}</DialogTitle>
           <Badge className={getStatusColor(invoice?.status)}>
             {invoice?.status}
           </Badge>
@@ -63,7 +67,7 @@ export default function InvoiceDetails({
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">Driver</p>
+            <p className="text-sm font-medium text-muted-foreground">{invoicesDict("driver")}</p>
             <p className="text-base">
               {invoice?.driver?.first_name} {invoice?.driver?.last_name}
             </p>
@@ -71,12 +75,12 @@ export default function InvoiceDetails({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground">Total Amount</p>
+              <p className="text-sm text-muted-foreground">{invoicesDict("total_amount")}</p>
               <p className="font-semibold">${invoice?.total_amount || null}</p>
             </div>
 
             <div>
-              <p className="text-sm text-muted-foreground">Amount Paid</p>
+              <p className="text-sm text-muted-foreground">{invoicesDict("amount_paid")}</p>
               <p className="text-base font-semibold">${invoice?.amount_paid || "N/A"}</p>
             </div>
           </div>
@@ -85,7 +89,7 @@ export default function InvoiceDetails({
         {invoice?.status == "paid" &&
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">
-              Payment Date
+              {invoicesDict("datePaid")}
             </p>
             <p className="text-base">
               {invoice?.datetime_paid ? new Date(invoice?.datetime_paid).toLocaleDateString() : 'Not paid yet'}
@@ -160,10 +164,10 @@ export default function InvoiceDetails({
         {create &&
         <div className='flex flex-col justify-center items-center gap-2'>
         {saved &&
-          <p className="text-md text-green-600 flex gap-2 items-center font-semibold">Invoice saved <BookmarkCheck strokeWidth={2} size={18} /></p>
+          <p className="text-md text-green-600 flex gap-2 items-center font-semibold">{invoicesDict("invoice_saved")} <BookmarkCheck strokeWidth={2} size={18} /></p>
         }
         <button className='flex justify-center items-center gap-1 bg-orange-500 hover:bg-orange-600 rounded-md px-4 py-2 cursor-pointer font-semibold w-max' onClick={handleGenerate}>
-          Create Invoice <Save strokeWidth={2.5} size={16} /></button>
+          {invoicesDict("create_invoice")}<Save strokeWidth={2.5} size={16} /></button>
       </div>
       }
         
