@@ -303,10 +303,12 @@
     "no": "No",
     "change_payment": "Marcar como pagado",
     "mark_unpaid": "Marcar como no pagado",
-    "add_note": "agregar nota",
+    "add_note": "Agregar Nota",
     "display_price": "Mostrar precio",
     "date": "Fecha",
-    "notes": "Notas"
+    "notes": "Notas",
+    "select_status": "Seleccione un estado",
+    "status":"Estado"
   },
   "xmlUpload": {
     "title": "Subir archivo XML",

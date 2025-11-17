@@ -306,7 +306,9 @@
     "add_note": "Add note",
     "display_price" : "Display price",
     "date":"Date",
-    "notes": "Notes"
+    "notes": "Notes", 
+    "select_status": "Select a status",
+    "status": "Status"
   },
   "xmlUpload": {
     "title": "Upload XML File",
