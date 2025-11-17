@@ -19,7 +19,7 @@
     "drivers": "Conductores",
     "create": "Crear reserva",
     "bookings": "Reservas",
-    "invoices":"Facturas"
+    "invoices": "Facturas"
   },
   "auth": {
     "loginTitle": "Iniciar sesión",
@@ -193,7 +193,7 @@
     "returnBooking": "Reserva de regreso",
     "oneWay": "Solo ida",
     "filterByStatus": "Filtrar por estado",
-    "searchBooking": "Buscar por número de reserva",
+    "searchBooking": "Buscar",
     "bookingNumber": "Número de reserva",
     "type": "Tipo",
     "status": "Estado",
@@ -205,7 +205,7 @@
     "noContact": "Sin información de contacto",
     "adults": "Adultos",
     "childSeats": "Asientos infantiles",
-    "noRecords": "No se encontraron registros de reserva.",
+    "noRecords": "No se encontraron registros.",
     "showing": "Mostrando",
     "to": "a",
     "of": "de",
@@ -213,12 +213,13 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "drivers": "Conductores",
-    "unassigned":"Sin asignar",
+    "unassigned": "Sin asignar",
     "paid": "Pagado",
     "unpaid": "No pagado",
     "payment_status": "Estado del pago",
     "price": "Precio",
-    "filter":"Filtrar"
+    "filter": "Filtrar",
+    "loading_more":"Cargando más"
   },
   "dateFilter": {
     "next90": "Próximos 90 días",
@@ -249,7 +250,8 @@
     "returnRide": "Viaje de regreso",
     "driver": "Conductor",
     "unassigned": "Sin asignar",
-    "noRecords": "No se encontraron registros de reserva."
+    "noRecords": "No se encontraron registros de reserva.",
+    "invoices":"Facturas"
   },
   "status": {
     "pending": "Pendiente",
@@ -303,7 +305,8 @@
     "mark_unpaid": "Marcar como no pagado",
     "add_note": "agregar nota",
     "display_price": "Mostrar precio",
-    "date":"Fecha"
+    "date": "Fecha",
+    "notes": "Notas"
   },
   "xmlUpload": {
     "title": "Subir archivo XML",
@@ -339,12 +342,17 @@
     }
   },
   "invoice": {
-  "invoice_number": "Número de factura",
-  "total_amount": "Importe total",
-  "amount_paid": "Importe pagado",
-  "status": "Estado",
-  "datePaid": "Fecha de pago",
-  "driver": "Conductor",
-  "invoices": "Facturas"
-}
+    "invoice_number": "Número de factura",
+    "total_amount": "Importe total",
+    "amount_paid": "Importe pagado",
+    "status": "Estado",
+    "datePaid": "Fecha de pago",
+    "driver": "Conductor",
+    "invoices": "Facturas",
+    "invoice": "Factura",
+    "generate": "Generar",
+    "invoice_saved": "Factura guardada",
+    "create_invoice": "Crear factura",
+    "generate_invoice": "Generar factura"
+  }
 }

@@ -458,7 +458,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
           <div className="mb-6">
             <div className="flex items-center gap-2 mb-4">
               <MessageCircleMore className="h-5 w-5" />
-              <h2 className="text-lg font-semibold">Notes</h2>
+              <h2 className="text-lg font-semibold">{dict("notes")}</h2>
 
             </div>
 
@@ -482,6 +482,14 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                           <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={17} strokeWidth={2.5}/></button>
                         </div>}
                     </div>
+                    {note?.status && (
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Status:</span>
+                      <Badge className={`text-xs font-semibold px-3 py-1 ${getStatusBadgeColor(note.status)}`}>
+                        {note.status}
+                      </Badge>
+                    </div>
+                  )}
                     <p className="text-gray-700 text-sm">{note.note}</p>
                   </div> :
                   <div className="bg-gray-100 rounded-lg p-4 border border-gray-200 flex flex-col gap-2">
@@ -505,7 +513,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-900">Add Note</h3>
+            <h3 className="font-semibold text-gray-900">{dict("notes")}</h3>
             <div className="space-y-3">
               <Textarea
                 id="comment"
@@ -522,7 +530,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                   onClick={handleAddNote}
                   className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg py-2"
                 >
-                  Add Note
+                  {dict("notes")}
                 </Button>
 
               </div>
