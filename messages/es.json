@@ -219,7 +219,7 @@
     "payment_status": "Estado del pago",
     "price": "Precio",
     "filter": "Filtrar",
-    "loading_more":"Cargando más"
+    "loading_more": "Cargando más"
   },
   "dateFilter": {
     "next90": "Próximos 90 días",
@@ -251,7 +251,7 @@
     "driver": "Conductor",
     "unassigned": "Sin asignar",
     "noRecords": "No se encontraron registros de reserva.",
-    "invoices":"Facturas"
+    "invoices": "Facturas"
   },
   "status": {
     "pending": "Pendiente",
@@ -308,7 +308,8 @@
     "date": "Fecha",
     "notes": "Notas",
     "select_status": "Seleccione un estado",
-    "status":"Estado"
+    "status": "Estado",
+    "change_status": "Haz clic para cambiar el estado de pago"
   },
   "xmlUpload": {
     "title": "Subir archivo XML",
@@ -355,6 +356,12 @@
     "generate": "Generar",
     "invoice_saved": "Factura guardada",
     "create_invoice": "Crear factura",
-    "generate_invoice": "Generar factura"
+    "generate_invoice": "Generar factura",
+    "unpaid": "Pendiente de pago",
+    "click_to_mark": "Haz clic para marcar como pagado",
+    "paid": "Pagado",
+    "mark_paid": "Marcar como pagado",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar"
   }
 }

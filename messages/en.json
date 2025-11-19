@@ -308,7 +308,8 @@
     "date":"Date",
     "notes": "Notes", 
     "select_status": "Select a status",
-    "status": "Status"
+    "status": "Status",
+    "change_status":"Click to change payment status"
   },
   "xmlUpload": {
     "title": "Upload XML File",
@@ -355,6 +356,12 @@
     "generate": "Generate",
     "invoice_saved": "Invoice saved",
     "create_invoice": "Create Invoice",
-    "generate_invoice": "Generate Invoice"
+    "generate_invoice": "Generate Invoice",
+    "unpaid":"Unpaid",
+    "click_to_mark": "Click to mark as paid",
+    "paid": "Paid",
+    "mark_paid": "Mark as Paid",
+    "cancel":"Cancel",
+    "confirm": "Confirm"
   }
 }

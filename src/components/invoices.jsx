@@ -109,7 +109,7 @@ export default function Invoices({ role }) {
             setIsLoadingItems(false);
         } else if (response.status === 401)
             router.push('/unauthorized');
-        
+
     }
 
     const getInvoice = async (driverID, invoiceID) => {
@@ -145,7 +145,7 @@ export default function Invoices({ role }) {
 
     useEffect(() => {
         getInvoicesFilter();
-    }, [searchQuery, startDate,endDate]);
+    }, [searchQuery, startDate, endDate]);
 
 
     useEffect(() => {
@@ -269,15 +269,16 @@ export default function Invoices({ role }) {
                     </div>
                 )}
             </div>
-
-            <InvoiceDetails
-                isOpen={isInvoiceOpen}
-                setIsOpen={setIsInvoiceOpen}
-                invoice={invoiceDetails}
-                dict={dict}
-                rideDict={rideDict}
-                create={false}
-            />
+            {isInvoiceOpen &&
+                <InvoiceDetails
+                    isOpen={isInvoiceOpen}
+                    setIsOpen={setIsInvoiceOpen}
+                    invoiceData={invoiceDetails}
+                    dict={dict}
+                    rideDict={rideDict}
+                    create={false}
+                />
+            }
         </div >
 
     )

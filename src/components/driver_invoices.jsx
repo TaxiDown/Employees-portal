@@ -122,7 +122,7 @@ export default function DriverInvoicess({ driverID, role }) {
   }
 
   useEffect(() => {
-    if(page == pageAdded) return;
+    if (page == pageAdded) return;
     setPageAdded(page);
     getInvoices();
   }, [page]);
@@ -326,15 +326,16 @@ export default function DriverInvoicess({ driverID, role }) {
           </div>
         )}
       </div>
-
-      <InvoiceDetails
-        isOpen={isInvoiceOpen}
-        setIsOpen={setIsInvoiceOpen}
-        invoice={invoice}
-        dict={dict}
-        rideDict={rideDict}
-        create={false}
-      />
+      {isInvoiceOpen &&
+        <InvoiceDetails
+          isOpen={isInvoiceOpen}
+          setIsOpen={setIsInvoiceOpen}
+          invoiceData={invoice}
+          dict={dict}
+          rideDict={rideDict}
+          create={false}
+        />
+      }
     </div >
 
   )

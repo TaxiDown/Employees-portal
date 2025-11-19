@@ -41,7 +41,7 @@ export default function GenerateInvoiceForm({
                 <DialogHeader>
                     <DialogTitle className="text-balance">{invoicesDict("invoice")}</DialogTitle>
                 </DialogHeader>
-                <div className='mx-2 mt-2 flex flex-col'>
+                <div className='mx-2 my-2 flex flex-col'>
                     <div className='flex gap-2 relative'>
                         <p className="text-sm text-gray-500 mb-1">{dict("filter")}</p>
                         <InvoiceDateRangeFilter className="absolute top-50" setStart={setStartDate} setEnd={setEndDate} start={startDate} end={endDate} />
@@ -70,10 +70,11 @@ export default function GenerateInvoiceForm({
             </DialogContent>
         </Dialog>
 
+        {isInvoiceOpen &&
         <InvoiceDetails
             isOpen={isInvoiceOpen}
             setIsOpen={setIsInvoiceOpen}
-            invoice={invoice}
+            invoiceData={invoice}
             dict={dict}
             rideDict={rideDict}
             driverID={driverID}
@@ -81,6 +82,7 @@ export default function GenerateInvoiceForm({
             endDate = {endDate}
             status = {status}
         />
+        }
         </div>
     );
 }

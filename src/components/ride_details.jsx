@@ -15,7 +15,12 @@ import { LaptopMinimalCheck } from "lucide-react"
 import { Trash } from "lucide-react"
 import { SquarePen } from "lucide-react"
 import Cookies from 'js-cookie'
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 
 export default function RideDetails({ rideData, setShowRide, role }) {
@@ -138,7 +143,6 @@ export default function RideDetails({ rideData, setShowRide, role }) {
   }
 
   const getAssignedDriverDetails = () => {
-    console.log(ride)
     if (!assignedDriver) return null
     return drivers.find((driver) => driver.id == assignedDriver)
   }
@@ -191,7 +195,6 @@ export default function RideDetails({ rideData, setShowRide, role }) {
       })
       if (response.status === 200) {
         const responseObject = await response.json()
-        console.log(responseObject)
         setNoteStatusOptions(responseObject.results)
       } else if (response.status === 401) {
         router.push("/unauthorized")
@@ -221,7 +224,6 @@ export default function RideDetails({ rideData, setShowRide, role }) {
     })
     if (response.status === 201) {
       const newNote = await response.json()
-      console.log(newNote)
       setRide(prev => ({
         ...prev,
         employees_notes: [
@@ -241,11 +243,10 @@ export default function RideDetails({ rideData, setShowRide, role }) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ note: updatedNote , status: newStatusID}),
+      body: JSON.stringify({ note: updatedNote, status: newStatusID }),
     })
     if (response.status === 200) {
       const newNote = await response.json()
-      console.log(newNote)
       setRide(prev => ({
         ...prev,
         employees_notes: prev.employees_notes.map(note =>
@@ -270,7 +271,6 @@ export default function RideDetails({ rideData, setShowRide, role }) {
     })
     if (response.status === 200) {
       const newNote = await response.json()
-      console.log(newNote)
       setRide(prev => ({
         ...prev,
         employees_notes: prev.employees_notes.filter(
@@ -279,6 +279,12 @@ export default function RideDetails({ rideData, setShowRide, role }) {
       }));
       setComment("");
     }
+  }
+
+  const formatDateTime = (dateTime) => {
+    return new Date(dateTime).toLocaleString("en-US", {
+      year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
+    })
   }
 
   return (
@@ -446,14 +452,26 @@ export default function RideDetails({ rideData, setShowRide, role }) {
             <div>
               <p className="text-sm text-gray-500 mb-1">{dict("payment_status")}</p>
               <DropdownMenu open={open} onOpenChange={setOpen}>
-                <DropdownMenuTrigger asChild>
-                  <Badge
-                    className={`px-3 py-1 rounded-full font-medium cursor-pointer hover:opacity-80 transition-opacity ${ride.flg_paid ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
-                      }`}
-                  >
-                    {ride.flg_paid ? dict("paid") : dict("unpaid")}
-                  </Badge>
-                </DropdownMenuTrigger>
+                <TooltipProvider>
+
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
+                        <Badge
+                          className={`px-3 py-1 rounded-full font-medium cursor-pointer hover:opacity-80 transition-opacity ${ride.flg_paid ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                            }`}
+                        >
+                          {ride.flg_paid ? dict("paid") : dict("unpaid")}
+                        </Badge>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+
+                    <TooltipContent>
+                      <p>{dict("change_status")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem onClick={() => changePayment(true)}>{dict("paid")}</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => changePayment(false)}>{dict("unpaid")}</DropdownMenuItem>
@@ -496,31 +514,31 @@ export default function RideDetails({ rideData, setShowRide, role }) {
 
             </div>
 
-            <div className="space-y-3 max-h-60 overflow-x-auto">
+            <div className="space-y-3 max-h-77 overflow-x-auto">
               {ride.employees_notes.map((note, index) => (
                 <div key={index}>
                   {noteChange !== note.id ?
                     <div id={note.id} className="bg-gray-100 rounded-lg p-4 border border-gray-200">
                       <div className="flex gap-2 items-center justify-between mb-1">
-                        <div className="flex gap-2">
-                          <h3 className="font-semibold text-gray-900 mb-1">
+                        <div className="flex gap-2 items-center mb-1">
+                          <h3 className="font-semibold text-gray-900">
                             {note?.employee?.first_name} {note?.employee?.last_name}
                           </h3>
                           <div>
-                            <Badge className={"text-xs text-gray-500"} variant="outline">{note.updated && "Updated"} {note.timestamp}</Badge>
+                            <Badge className={"text-xs text-gray-500"} variant="outline"><strong>{note.updated && "Updated"}</strong> {formatDateTime(note.timestamp)}</Badge>
                           </div>
                         </div>
                         {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black" /> : id == note?.employee?.id &&
                           <div className="flex gap-2">
-                            <button className="cursor-pointer" onClick={() => { setUpdatedNote(note.note); setNoteChange(note.id); }}><SquarePen className={" text-orange-500 hover:text-orange-700 "} size={17} strokeWidth={2.5} /></button>
+                            <button className="cursor-pointer" onClick={() => { setUpdatedNote(note.note); setNewStatusID(note.status.id); setNewStatus(note.status.status); setNoteChange(note.id); }}><SquarePen className={" text-orange-500 hover:text-orange-700 "} size={17} strokeWidth={2.5} /></button>
                             <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={17} strokeWidth={2.5} /></button>
                           </div>}
                       </div>
-                      {note?.status && (
+                      {note?.status?.status && (
                         <div className="mb-3 flex items-center gap-2">
                           <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Status:</span>
                           <Badge className={`text-xs font-semibold px-3 py-1 bg-gray-200 text-gray-800`}>
-                            {note.status}
+                            {note.status.status}
                           </Badge>
                         </div>
                       )}
@@ -528,28 +546,28 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                     </div> :
                     <div className="bg-gray-100 rounded-lg p-4 border border-gray-200 flex flex-col gap-4">
                       <div className="flex gap-3">
-  <label className="text-md font-medium text-stone-600 tracking-wide">
-    {dict("status")}
-  </label>
+                        <label className="text-md font-medium text-stone-600 tracking-wide">
+                          {dict("status")}
+                        </label>
 
-  <select
-    value={newStatus}
-    onChange={(e) => {
-      setNewStatus(e.target.value);
-      setNewStatusID(e.target.selectedOptions[0].id);
-    }}
-    className="border border-gray-300 h-8 rounded-lg px-3 w-full bg-white text-gray-900 text-sm focus:outline-none"
-  >
-    <option value="">{dict("select_status")}</option>
+                        <select
+                          value={newStatus}
+                          onChange={(e) => {
+                            setNewStatus(e.target.value);
+                            setNewStatusID(e.target.selectedOptions[0].id);
+                          }}
+                          className="border border-gray-300 h-8 rounded-lg px-3 w-full bg-white text-gray-900 text-sm focus:outline-none"
+                        >
+                          <option value="">{dict("select_status")}</option>
 
-    {noteStatusOptions.length > 0 &&
-      noteStatusOptions.map((status) => (
-        <option key={status.id} id={status.id} value={status.status}>
-          {status.status}
-        </option>
-      ))}
-  </select>
-</div>
+                          {noteStatusOptions.length > 0 &&
+                            noteStatusOptions.map((status) => (
+                              <option key={status.id} id={status.id} value={status.status}>
+                                {status.status}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
 
                       <Textarea
                         id="updatedNote"
@@ -572,29 +590,29 @@ export default function RideDetails({ rideData, setShowRide, role }) {
 
           <div>
             <div className="space-y-3">
-            <div className="flex gap-3">
-  <label className="text-md font-medium text-stone-600 tracking-wide">
-    {dict("status")}
-  </label>
+              <div className="flex gap-3">
+                <label className="text-md font-medium text-stone-600 tracking-wide">
+                  {dict("status")}
+                </label>
 
-  <select
-    value={status}
-    onChange={(e) => {
-      setStatus(e.target.value);
-      setStatusID(e.target.selectedOptions[0].id);
-    }}
-    className="border border-gray-300 h-8 rounded-lg px-3 w-full bg-white text-gray-900 text-sm focus:outline-none"
-  >
-    <option value="">{dict("select_status")}</option>
+                <select
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value);
+                    setStatusID(e.target.selectedOptions[0].id);
+                  }}
+                  className="border border-gray-300 h-8 rounded-lg px-3 w-full bg-white text-gray-900 text-sm focus:outline-none"
+                >
+                  <option value="">{dict("select_status")}</option>
 
-    {noteStatusOptions.length > 0 &&
-      noteStatusOptions.map((status) => (
-        <option key={status.id} id={status.id} value={status.status}>
-          {status.status}
-        </option>
-      ))}
-  </select>
-</div>
+                  {noteStatusOptions.length > 0 &&
+                    noteStatusOptions.map((status) => (
+                      <option key={status.id} id={status.id} value={status.status}>
+                        {status.status}
+                      </option>
+                    ))}
+                </select>
+              </div>
 
               <div className="flex gap-3 items-center">
                 <h3 className="font-semibold text-stone-600">{dict("notes")}</h3>
