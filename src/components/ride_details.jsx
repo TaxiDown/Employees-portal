@@ -519,29 +519,31 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                 <div key={index}>
                   {noteChange !== note.id ?
                     <div id={note.id} className="bg-gray-100 rounded-lg p-4 border border-gray-200">
-                      <div className="flex gap-2 items-center justify-between mb-1">
-                        <div className="flex gap-2 items-center mb-1">
-                          <h3 className="font-semibold text-gray-900">
+                      <div className={`flex ${note.status.status ? "flex-col-reverse items-end gap-1" : "items-center justify-between gap-1"}  mb-1`}>
+                        <div className="flex items-center mb-1 w-full gap-2">
+                          <h3 className="font-semibold text-gray-900 w-max">
                             {note?.employee?.first_name} {note?.employee?.last_name}
                           </h3>
                           <div>
-                            <Badge className={"text-xs text-gray-500"} variant="outline"><strong>{note.updated && "Updated"}</strong> {formatDateTime(note.timestamp)}</Badge>
+                            <Badge className={"text-xs text-gray-500"} variant="outline">{note?.status?.status && <>{dict("Changed_status")} <strong> {note.status.status}</strong> {dict("at")}</>} {formatDateTime(note.timestamp)}</Badge>
                           </div>
                         </div>
+                        <div>
                         {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black" /> : id == note?.employee?.id &&
                           <div className="flex gap-2">
-                            <button className="cursor-pointer" onClick={() => { setUpdatedNote(note.note); setNewStatusID(note.status.id); setNewStatus(note.status.status); setNoteChange(note.id); }}><SquarePen className={" text-orange-500 hover:text-orange-700 "} size={17} strokeWidth={2.5} /></button>
-                            <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={17} strokeWidth={2.5} /></button>
+                            <button className="cursor-pointer" onClick={() => { setUpdatedNote(note.note); setNewStatusID(note.status.id); setNewStatus(note.status.status); setNoteChange(note.id); }}><SquarePen className={" text-orange-500 hover:text-orange-700 "} size={15} strokeWidth={2.5} /></button>
+                            <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={15} strokeWidth={2.5} /></button>
                           </div>}
+                          </div>
                       </div>
-                      {note?.status?.status && (
+                      {/*note?.status?.status && (
                         <div className="mb-3 flex items-center gap-2">
                           <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Status:</span>
                           <Badge className={`text-xs font-semibold px-3 py-1 bg-gray-200 text-gray-800`}>
                             {note.status.status}
                           </Badge>
                         </div>
-                      )}
+                      )*/}
                       <p className="text-gray-700 text-sm">{note.note}</p>
                     </div> :
                     <div className="bg-gray-100 rounded-lg p-4 border border-gray-200 flex flex-col gap-4">

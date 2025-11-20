@@ -204,7 +204,7 @@ export default function InvoiceDetails({
 
             <div>
               <p className="text-sm text-muted-foreground">{invoicesDict("total_amount")}</p>
-              <p className="font-semibold">${invoice?.total_amount || null}</p>
+              <p className="font-semibold">€ {invoice?.total_amount || null}</p>
             </div>
           </div>
 
@@ -227,7 +227,7 @@ export default function InvoiceDetails({
                     </div>
                   </div>
                   :
-                  <p className="text-base font-medium">${invoice?.amount_paid || "0"}</p>
+                  <p className="text-base font-medium">€ {invoice?.amount_paid || "0"}</p>
               }
             </div>
 
@@ -291,7 +291,7 @@ export default function InvoiceDetails({
                           {ride?.dropoff_location ? (
                             <div title={ride?.dropoff_location}>{formatLocation(ride?.dropoff_location)}</div>
                           ) :
-                            <div>{"null"}</div>}
+                            <div className="pl-10">{"-"}</div>}
                         </div>
                       </div>
                     </TableCell>

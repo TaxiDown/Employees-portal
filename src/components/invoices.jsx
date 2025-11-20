@@ -11,6 +11,9 @@ import Loading from './loading';
 import InvoiceDetails from './invoice_details';
 import { Search } from 'lucide-react';
 import { DateRangeFilter } from './date_filter';
+import { CircleCheck } from 'lucide-react';
+import { CircleX } from 'lucide-react';
+import { Minus } from 'lucide-react';
 
 export default function Invoices({ role }) {
     const [invoices, setInvoices] = useState("");
@@ -73,6 +76,7 @@ export default function Invoices({ role }) {
             setIsLoading(false);
             const detailsObject = await response.json();
             setPageAdded(page);
+            console.log(detailsObject)
             if (page === 1)
                 setInvoices(detailsObject.results);
             else {
@@ -219,8 +223,10 @@ export default function Invoices({ role }) {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="font-semibold">{invoiceDict("invoice_number")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("is_paid")}</TableHead>
                             <TableHead className="font-semibold">{invoiceDict("driver")}</TableHead>
-                            <TableHead className="font-semibold">{invoiceDict("status")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("from_date")}</TableHead>
+                            <TableHead className="font-semibold">{invoiceDict("to_date")}</TableHead>
                             <TableHead className="font-semibold">{invoiceDict("total_amount")}</TableHead>
                             <TableHead className="font-semibold">{invoiceDict("amount_paid")}</TableHead>
                             <TableHead className="font-semibold">{invoiceDict("datePaid")}</TableHead>
@@ -234,28 +240,34 @@ export default function Invoices({ role }) {
                                     {invoice?.invoice_number}
                                 </TableCell>
 
+                                <TableCell className="space-y-1 flex justify-center">
+                                    {invoice?.flg_paid ? <CircleCheck size={15} strokeWidth={2.5} className='text-green-500' /> : <CircleX size={15} strokeWidth={2.5} className='text-red-500' />}
+                                </TableCell>
+
                                 <TableCell className="space-y-1">
                                     {invoice?.driver?.first_name} {invoice?.driver?.last_name}
                                 </TableCell>
 
                                 <TableCell className="space-y-1">
-                                    {invoice?.status}
+                                    <Badge className="text-muted-foreground" variant={"outline"}>{String(invoice?.from_date)}</Badge>
                                 </TableCell>
 
                                 <TableCell className="space-y-1">
-                                    {String(invoice?.total_amount)}
+                                    <Badge className="text-muted-foreground" variant={"outline"}>{String(invoice?.to_date)}</Badge>
                                 </TableCell>
 
                                 <TableCell className="space-y-1">
-                                    {String(invoice?.amount_paid)}
+                                    € {String(invoice?.total_amount) || "0"}
                                 </TableCell>
 
                                 <TableCell className="space-y-1">
-                                    <div className="flex items-start gap-2">
-                                        <div className="text-sm text-muted-foreground">
-                                            <div className="font-medium">{invoice?.datetime_paid ? formatDateTime(invoice?.datetime_paid) : "null"}</div>
+                                    € {invoice?.amount_paid || "0"}
+                                </TableCell>
+
+                                <TableCell className="p-0">
+                                        <div className="text-sm text-muted-foreground flex justify-center p-0">
+                                            <div className="font-medium text-center w-max">{invoice?.datetime_paid ? formatDateTime(invoice?.datetime_paid) : <Minus className="text-black" strokeWidth={1.5} size={15}/>}</div>
                                         </div>
-                                    </div>
                                 </TableCell>
 
 

@@ -309,7 +309,9 @@
     "notes": "Notas",
     "select_status": "Seleccione un estado",
     "status": "Estado",
-    "change_status": "Haz clic para cambiar el estado de pago"
+    "change_status": "Haz clic para cambiar el estado de pago",
+    "Changed_status": "Se cambió el estado a",
+    "at": "a las"
   },
   "xmlUpload": {
     "title": "Subir archivo XML",
@@ -362,6 +364,10 @@
     "paid": "Pagado",
     "mark_paid": "Marcar como pagado",
     "cancel": "Cancelar",
-    "confirm": "Confirmar"
+    "confirm": "Confirmar",
+    "from_date": "Desde la fecha",
+    "to_date": "Hasta la fecha",
+    "payment_status":"Estado del pago",
+    "is_paid": "Está pagado"
   }
 }
