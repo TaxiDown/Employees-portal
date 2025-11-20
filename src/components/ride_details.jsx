@@ -273,8 +273,12 @@ export default function RideDetails({ rideData, setShowRide, role }) {
       const newNote = await response.json()
       setRide(prev => ({
         ...prev,
-        employees_notes: prev.employees_notes.filter(
-          note => note.id !== noteID
+        employees_notes: prev.employees_notes.map(n =>
+          n.id === noteID
+            ? {...n
+              , note: ""
+            }
+            : n
         )
       }));
       setComment("");
@@ -520,7 +524,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                   {noteChange !== note.id ?
                     <div id={note.id} className="bg-gray-100 rounded-lg p-4 border border-gray-200">
                       <div className={`flex ${note.status.status ? "flex-col-reverse items-end gap-1" : "items-center justify-between gap-1"}  mb-1`}>
-                        <div className="flex items-center mb-1 w-full gap-2">
+                        <div className="flex items-center mb-1 w-full gap-1">
                           <h3 className="font-semibold text-gray-900 w-max">
                             {note?.employee?.first_name} {note?.employee?.last_name}
                           </h3>
@@ -529,7 +533,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                           </div>
                         </div>
                         <div>
-                        {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black" /> : id == note?.employee?.id &&
+                        {note.system_added ? <LaptopMinimalCheck size={20} strokeWidth={2.5} className="text-black" /> : id == note?.employee?.id && note?.note &&
                           <div className="flex gap-2">
                             <button className="cursor-pointer" onClick={() => { setUpdatedNote(note.note); setNewStatusID(note.status.id); setNewStatus(note.status.status); setNoteChange(note.id); }}><SquarePen className={" text-orange-500 hover:text-orange-700 "} size={15} strokeWidth={2.5} /></button>
                             <button className="cursor-pointer" onClick={() => deleteNote(note.id)}><Trash className={" text-red-500 hover:text-red-700"} size={15} strokeWidth={2.5} /></button>
@@ -547,7 +551,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                       <p className="text-gray-700 text-sm">{note.note}</p>
                     </div> :
                     <div className="bg-gray-100 rounded-lg p-4 border border-gray-200 flex flex-col gap-4">
-                      <div className="flex gap-3">
+                      {/*<div className="flex gap-3">
                         <label className="text-md font-medium text-stone-600 tracking-wide">
                           {dict("status")}
                         </label>
@@ -569,7 +573,7 @@ export default function RideDetails({ rideData, setShowRide, role }) {
                               </option>
                             ))}
                         </select>
-                      </div>
+                      </div>*/}
 
                       <Textarea
                         id="updatedNote"

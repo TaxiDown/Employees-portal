@@ -14,6 +14,7 @@ import { DateRangeFilter } from './date_filter';
 import { CircleCheck } from 'lucide-react';
 import { CircleX } from 'lucide-react';
 import { Minus } from 'lucide-react';
+import { EuroIcon } from 'lucide-react';
 
 export default function Invoices({ role }) {
     const [invoices, setInvoices] = useState("");
@@ -257,17 +258,21 @@ export default function Invoices({ role }) {
                                 </TableCell>
 
                                 <TableCell className="space-y-1">
-                                    € {String(invoice?.total_amount) || "0"}
+                                    <div className='flex items-center gap-1'>
+                                    <EuroIcon className="text-gray-400" size={14}/> {String(invoice?.total_amount) || "0"}
+                                    </div>
                                 </TableCell>
 
                                 <TableCell className="space-y-1">
-                                    € {invoice?.amount_paid || "0"}
+                                <div className='flex items-center gap-1'>
+                                    <EuroIcon className="text-gray-400" size={14}/> {invoice?.amount_paid || "0"}
+                                </div>
                                 </TableCell>
 
                                 <TableCell className="p-0">
-                                        <div className="text-sm text-muted-foreground flex justify-center p-0">
-                                            <div className="font-medium text-center w-max">{invoice?.datetime_paid ? formatDateTime(invoice?.datetime_paid) : <Minus className="text-black" strokeWidth={1.5} size={15}/>}</div>
-                                        </div>
+                                    <div className="text-sm text-muted-foreground flex justify-center p-0">
+                                        <div className="font-medium text-center w-max">{invoice?.datetime_paid ? formatDateTime(invoice?.datetime_paid) : <Minus className="text-black" strokeWidth={1.5} size={15} />}</div>
+                                    </div>
                                 </TableCell>
 
 

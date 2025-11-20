@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { EuroIcon } from "lucide-react";
 
 export default function InvoiceDetails({
   isOpen,
@@ -204,7 +205,7 @@ export default function InvoiceDetails({
 
             <div>
               <p className="text-sm text-muted-foreground">{invoicesDict("total_amount")}</p>
-              <p className="font-semibold">€ {invoice?.total_amount || null}</p>
+              <p className="font-semibold flex items-center gap-1"><EuroIcon className="h-4 w-4 text-gray-400" /> {invoice?.total_amount || null}</p>
             </div>
           </div>
 
@@ -227,7 +228,7 @@ export default function InvoiceDetails({
                     </div>
                   </div>
                   :
-                  <p className="text-base font-medium">€ {invoice?.amount_paid || "0"}</p>
+                  <p className="text-base font-medium flex items-center gap-1"><EuroIcon className="h-4 w-4 text-gray-400" /> {invoice?.amount_paid || "0"}</p>
               }
             </div>
 
